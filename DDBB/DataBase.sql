@@ -165,11 +165,11 @@ CREATE TABLE productos_categorias (
 CREATE TABLE variantes_producto (
   id_variante      INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,  -- PK técnica
   id_producto      INT UNSIGNED NOT NULL,                    -- FK al producto
-  atributo         VARCHAR(80)  NOT NULL,                    -- p.ej. "RAM", "Color"
-  valor            VARCHAR(120) NOT NULL,                    -- p.ej. "16GB", "Negro"
-  precio           DECIMAL(12,2) NULL,                       -- si NULL => usar precio_base
-  stock            INT UNSIGNED NOT NULL DEFAULT 0,          -- stock específico
-  sku              VARCHAR(60)  NULL UNIQUE,                 -- identificador logístico
+  atributo         VARCHAR(80)  NOT NULL,                    -- 
+  valor            VARCHAR(120) NOT NULL,                    -- 
+  precio           DECIMAL(12,2) NULL,                       -- 
+  stock            INT UNSIGNED NOT NULL DEFAULT 0,          -- 
+  sku              VARCHAR(60)  NULL UNIQUE,                 -- 
   created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_var_producto

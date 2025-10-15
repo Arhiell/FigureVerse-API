@@ -35,40 +35,40 @@ VALUES
 -- ----------------------------------------------------------------------
 INSERT INTO categorias (nombre_categoria, descripcion)
 VALUES
-('Laptops', 'Portátiles de alto rendimiento'),
-('Celulares', 'Smartphones de última generación'),
-('Periféricos', 'Teclados, mouse y accesorios'),
-('Audio', 'Auriculares y parlantes');
+('Anime', 'Figuras de acción y coleccionables de anime'),
+('Videojuegos', 'Figuras de acción y coleccionables de videojuegos'),
+('Peliculas', 'Figuras de acción y coleccionables de películas'),
+('Juegos de Mesa', 'Figuras de acción y coleccionables de juegos de mesa');
 
 -- ----------------------------------------------------------------------
 -- 5) PRODUCTOS
 -- ----------------------------------------------------------------------
 INSERT INTO productos (nombre, descripcion, precio_base, stock, id_categoria)
 VALUES
-('Laptop Gamer Ultra 3000', 'Laptop con procesador Ryzen 7 y GPU RTX 4060.', 950000.00, 12, 1),
-('Celular Quantum Pro', 'Smartphone con pantalla OLED y cámara de 108MP.', 520000.00, 25, 2),
-('Mouse Inalámbrico XSpeed', 'Mouse ergonómico recargable con Bluetooth.', 15000.00, 100, 3),
-('Auriculares SoundMax', 'Auriculares Bluetooth con cancelación de ruido.', 28000.00, 60, 4);
+('Naruto Usumaki Sage', 'Figura de acción de Naruto Uzumaki modo sabio, serie Naruto, escala 1/10', 950000.00, 12, 1),
+('Shinji Ikari', 'Figura de acción de Shinji Ikari, anime Neon Genesis Evangelion, escala 1/10', 520000.00, 25, 2),
+('Sanji Vinsmoke', 'Figura de acción de Sanji Vinsmoke, anime One Piece, escala 1/10', 15000.00, 100, 3),
+('Misato Katsuragi', 'Figura de acción de Misato Katsuragi, anime Neon Genesis Evangelion, escala 1/10', 28000.00, 60, 4);
 
 -- ----------------------------------------------------------------------
 -- 6) VARIANTES DE PRODUCTOS
 -- ----------------------------------------------------------------------
-INSERT INTO variantes_producto (id_producto, atributo, valor, precio, stock, sku)
+/*INSERT INTO variantes_producto (id_producto, atributo, valor, precio, stock, sku)
 VALUES
-(1, 'RAM', '16GB', 970000.00, 6, 'LAP16-3000'),
-(1, 'RAM', '32GB', 1050000.00, 6, 'LAP32-3000'),
-(2, 'Color', 'Negro', NULL, 10, 'CELNQPRO'),
-(2, 'Color', 'Azul', NULL, 15, 'CELAZPRO');
+(1, 'Modo Sabio', 'Rojo', 970000.00, 6, 'LAP16-3000'),
+(1, 'Modo Sabio', 'Naranja', 1050000.00, 6, 'LAP32-3000'),
+(2, 'Con silla', 'Negro', NULL, 10, 'CELNQPRO'),
+(2, 'Con silla', 'Azul', NULL, 15, 'CELAZPRO');*/
 
 -- ----------------------------------------------------------------------
 -- 7) IMÁGENES DE PRODUCTOS
 -- ----------------------------------------------------------------------
 INSERT INTO imagenes_productos (id_producto, url_imagen, posicion, alt_text)
 VALUES
-(1, 'https://feraytek.com/img/laptop1.png', 1, 'Laptop Gamer Ultra 3000'),
-(2, 'https://feraytek.com/img/celular1.png', 1, 'Celular Quantum Pro'),
-(3, 'https://feraytek.com/img/mouse1.png', 1, 'Mouse Inalámbrico XSpeed'),
-(4, 'https://feraytek.com/img/audio1.png', 1, 'Auriculares SoundMax');
+(1, 'https://figureverse.com/img/laptop1.png', 1, 'Naruto Uzumaki Sage'),
+(2, 'https://figureverse.com/img/celular1.png', 1, 'Shinji Ikari'),
+(3, 'https://figureverse.com/img/mouse1.png', 1, 'Sanji Vinsmoke'),
+(4, 'https://figureverse.com/img/audio1.png', 1, 'Misato Katsuragi');
 
 -- ----------------------------------------------------------------------
 -- 8) CARRITO Y DETALLE
