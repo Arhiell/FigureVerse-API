@@ -1,7 +1,6 @@
 -- ======================================================================
--- 🧩 BASE DE DATOS: FigureVerse - Tienda Online de Figuras de Acción y Anime
+-- BASE DE DATOS: FigureVerse - Tienda Online de Figuras de Acción y Anime
 -- Desarrollada para el proyecto conjunto de Ariel & Bautista
--- Motor: MySQL 8+, Engine: InnoDB, Charset: utf8mb4
 -- ======================================================================
 
 -- Creación de la base de datos
@@ -12,7 +11,7 @@ CREATE DATABASE IF NOT EXISTS figureverse
 USE figureverse;
 
 -- ======================================================================
--- 1️⃣ USUARIOS Y PERFILES
+-- 1 USUARIOS Y PERFILES
 -- ======================================================================
 
 -- Tabla principal de usuarios: contiene tanto clientes como administradores.
@@ -20,11 +19,10 @@ CREATE TABLE usuarios (
   id_usuario       INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,           -- Identificador único
   nombre_usuario   VARCHAR(100) NOT NULL UNIQUE,                      -- Nombre de usuario visible
   email            VARCHAR(150) NOT NULL UNIQUE,                      -- Correo electrónico
-  password_hash    VARCHAR(255) NOT NULL,                             -- Contraseña cifrada (bcrypt o similar)
-  rol              ENUM('cliente','admin') NOT NULL DEFAULT 'cliente',-- Rol del usuario dentro del sistema
+  password_hash    VARCHAR(255) NOT NULL,                             -- Contraseña cifrada (bcrypt)
+  rol              ENUM('cliente','admin','super_admin') NOT NULL DEFAULT 'cliente',-- Rol del usuario dentro del sistema
   estado           ENUM('activo','inactivo') NOT NULL DEFAULT 'activo',-- Estado general de la cuenta
   avatar_url       VARCHAR(255) NULL,                                 -- Imagen de perfil (opcional)
-  biografia        TEXT NULL,                                         -- Breve descripción o intereses del coleccionista
   fecha_registro   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,       -- Fecha de alta
   ultimo_login     DATETIME NULL,                                     -- Último acceso registrado
   created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,       -- Fecha de creación (auditoría)
@@ -35,11 +33,15 @@ CREATE TABLE usuarios (
 CREATE TABLE clientes (
   id_cliente       INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,           -- Identificador único
   id_usuario       INT UNSIGNED NOT NULL UNIQUE,                      -- Relación 1:1 con usuarios
-  dni              VARCHAR(20) NOT NULL UNIQUE,                       -- Documento del cliente
   nombre           VARCHAR(100) NOT NULL,                             -- Nombre real
   apellido         VARCHAR(100) NOT NULL,                             -- Apellido
+  dni              VARCHAR(20) NOT NULL UNIQUE,                       -- Documento del cliente
   telefono         VARCHAR(25) NULL,                                  -- Teléfono de contacto
   direccion        VARCHAR(255) NOT NULL,                             -- Dirección principal
+  numero           VARCHAR(10)  NULL,                                 -- Número de la casa (opcional)
+  piso             VARCHAR(10)  NULL,                                 -- Piso (opcional)
+  departamento     VARCHAR(10)  NULL,                                 -- Dpto (opcional)
+  referencia       VARCHAR(255) NULL,                               -- Referencia adicional (ej: "Frente a la plaza")
   ciudad           VARCHAR(100) NOT NULL,                             -- Ciudad
   provincia        VARCHAR(100) NOT NULL,                             -- Provincia o estado
   pais             VARCHAR(100) NOT NULL DEFAULT 'Argentina',         -- País
@@ -57,9 +59,9 @@ CREATE TABLE clientes (
 CREATE TABLE administradores (
   id_admin         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   id_usuario       INT UNSIGNED NOT NULL UNIQUE,
-  dni              VARCHAR(20) NOT NULL UNIQUE,
   nombre           VARCHAR(100) NOT NULL,
   apellido         VARCHAR(100) NOT NULL,
+  dni              VARCHAR(20) NOT NULL UNIQUE,
   telefono         VARCHAR(25) NULL,
   cargo            VARCHAR(100) NOT NULL, 
   area             ENUM('ventas','inventario','marketing','soporte','otro') DEFAULT 'otro',
@@ -71,7 +73,7 @@ CREATE TABLE administradores (
 ) ENGINE=InnoDB COMMENT='Administradores y personal interno de FigureVerse.';
 
 -- ======================================================================
--- 2️⃣ CATÁLOGO DE PRODUCTOS Y COLECCIONES
+-- 2 CATÁLOGO DE PRODUCTOS Y COLECCIONES
 -- ======================================================================
 
 -- Tabla de universos: agrupa franquicias o mundos (Marvel, DC, Anime, etc.)
@@ -90,14 +92,6 @@ CREATE TABLE fabricantes (
   sitio_web        VARCHAR(200) NULL,
   created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB COMMENT='Fabricantes oficiales de figuras (Bandai, Funko, Kotobukiya, etc.).';
-
--- Tabla de licencias: marca comercial o saga (Naruto, Dragon Ball, Star Wars...).
-CREATE TABLE licencias (
-  id_licencia      INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  nombre           VARCHAR(120) NOT NULL UNIQUE,
-  descripcion      VARCHAR(255) NULL,
-  created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB COMMENT='Licencias o franquicias bajo las cuales se venden las figuras.';
 
 -- Tabla de categorías: organiza los productos según tipo o material.
 CREATE TABLE categorias (
@@ -121,7 +115,6 @@ CREATE TABLE productos (
   id_categoria     INT UNSIGNED NOT NULL,                           -- Categoría
   id_universo      INT UNSIGNED NULL,                               -- Universo (Marvel, Anime, etc.)
   id_fabricante    INT UNSIGNED NULL,                               -- Fabricante
-  id_licencia      INT UNSIGNED NULL,                               -- Licencia comercial
   anio_lanzamiento YEAR NULL,                                       -- Año de lanzamiento del producto
   escala           VARCHAR(20) NULL,                                -- Escala de la figura (1/6, 1/12, etc.)
   estado           ENUM('activo','inactivo','edicion_limitada','agotado') NOT NULL DEFAULT 'activo',
@@ -131,7 +124,6 @@ CREATE TABLE productos (
   CONSTRAINT fk_prod_cat FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria),
   CONSTRAINT fk_prod_uni FOREIGN KEY (id_universo) REFERENCES universos(id_universo),
   CONSTRAINT fk_prod_fab FOREIGN KEY (id_fabricante) REFERENCES fabricantes(id_fabricante),
-  CONSTRAINT fk_prod_lic FOREIGN KEY (id_licencia) REFERENCES licencias(id_licencia),
   CONSTRAINT chk_precio_nonneg CHECK (precio_base >= 0),
   CONSTRAINT chk_stock_nonneg CHECK (stock >= 0)
 ) ENGINE=InnoDB COMMENT='Productos disponibles en la tienda (figuras, cómics, coleccionables).';
@@ -169,7 +161,7 @@ CREATE TABLE imagenes_productos (
 CREATE INDEX idx_img_prod_pos ON imagenes_productos(id_producto, posicion);
 
 -- ======================================================================
--- 3️⃣ CARRITO DE COMPRAS
+-- 3 CARRITO DE COMPRAS
 -- ======================================================================
 
 CREATE TABLE carrito (
@@ -204,7 +196,7 @@ CREATE TABLE carrito_detalle (
 ) ENGINE=InnoDB COMMENT='Detalle de los productos agregados al carrito.';
 
 -- ======================================================================
--- 4️⃣ PEDIDOS, PAGOS Y ENVÍOS
+-- 4 PEDIDOS, PAGOS Y ENVÍOS
 -- ======================================================================
 
 CREATE TABLE pedidos (
@@ -239,6 +231,21 @@ CREATE TABLE pedido_detalle (
   FOREIGN KEY (id_variante) REFERENCES variantes_producto(id_variante)
 ) ENGINE=InnoDB COMMENT='Detalle de los productos incluidos en cada pedido.';
 
+-- Tabla historial_pedidos: conserva los cambios de estado de cada pedido.
+CREATE TABLE historial_pedidos (
+  id_historial     INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  id_pedido        INT UNSIGNED NOT NULL,
+  estado_anterior  ENUM('pendiente','pagado','enviado','entregado','cancelado','reembolsado') NULL,
+  estado_nuevo     ENUM('pendiente','pagado','enviado','entregado','cancelado','reembolsado') NOT NULL,
+  fecha_cambio     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  id_usuario       INT UNSIGNED NULL,                                -- Usuario o admin que efectuó el cambio
+  comentario       VARCHAR(255) NULL,                                -- Observación opcional
+  FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+    ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB COMMENT='Registro histórico de cambios de estado en los pedidos.';
+
 CREATE TABLE pagos (
   id_pago        INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   id_pedido      INT UNSIGNED NOT NULL UNIQUE,
@@ -271,20 +278,8 @@ CREATE TABLE envios (
 ) ENGINE=InnoDB COMMENT='Información de envíos y seguimiento de pedidos.';
 
 -- ======================================================================
--- 5️⃣ RESEÑAS Y DESCUENTOS
+-- 5 DESCUENTOS
 -- ======================================================================
-
-CREATE TABLE resenas (
-  id_resena     INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  id_producto   INT UNSIGNED NOT NULL,
-  id_usuario    INT UNSIGNED NOT NULL,
-  calificacion  TINYINT UNSIGNED NOT NULL CHECK (calificacion BETWEEN 1 AND 5),
-  comentario    TEXT NULL,
-  fecharesena   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE CASCADE,
-  FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
-  UNIQUE KEY uq_resena_user (id_producto, id_usuario)
-) ENGINE=InnoDB COMMENT='Reseñas y valoraciones de los usuarios sobre los productos.';
 
 CREATE TABLE descuentos (
   id_descuento  INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -309,64 +304,49 @@ CREATE TABLE pedidos_descuentos (
 ) ENGINE=InnoDB COMMENT='Relación entre pedidos y descuentos aplicados.';
 
 -- ======================================================================
--- 6️⃣ SOPORTE Y HISTORIAL
+-- 6 FACTURAS Y ENVÍO DE FACTURAS
 -- ======================================================================
 
-CREATE TABLE soporte (
-  id_soporte       INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  id_usuario       INT UNSIGNED NOT NULL,
-  id_admin         INT UNSIGNED NULL,
-  tipo             ENUM('reclamo','consulta','sugerencia') DEFAULT 'consulta',
-  prioridad        ENUM('baja','media','alta') DEFAULT 'media',
-  asunto           VARCHAR(200) NOT NULL,
-  mensaje          TEXT NOT NULL,
-  estado           ENUM('entendido ✅  
-voy a completarte el bloque final de la base de datos **FigureVerse** con los últimos apartados que quedaron truncados (soporte, historial y algunos índices), manteniendo el estilo comentado. esto te dejará el script completo, limpio y listo para ejecutar en **mysql 8**.
-
----
-
-```sql
--- ======================================================================
--- 6️⃣ SOPORTE Y HISTORIAL
--- ======================================================================
-
--- Tabla de soporte: gestiona consultas, reclamos o sugerencias de los clientes.
-CREATE TABLE soporte (
-  id_soporte       INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  id_usuario       INT UNSIGNED NOT NULL,                            -- Cliente que inicia el ticket
-  id_admin         INT UNSIGNED NULL,                                -- Administrador que responde (opcional)
-  tipo             ENUM('reclamo','consulta','sugerencia') DEFAULT 'consulta', -- Tipo de solicitud
-  prioridad        ENUM('baja','media','alta') DEFAULT 'media',      -- Nivel de prioridad
-  asunto           VARCHAR(200) NOT NULL,                            -- Título o resumen del caso
-  mensaje          TEXT NOT NULL,                                    -- Detalle del problema o consulta
-  canal            ENUM('web','email','whatsapp') DEFAULT 'web',     -- Canal de comunicación
-  estado           ENUM('pendiente','respondido','cerrado') DEFAULT 'pendiente', -- Estado del ticket
-  fecha_creacion   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,      -- Fecha de apertura
-  respuesta        TEXT NULL,                                        -- Respuesta del administrador
-  fecha_respuesta  DATETIME NULL,                                    -- Fecha en que se respondió
-  FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
-    ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (id_admin) REFERENCES usuarios(id_usuario)
-    ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB COMMENT='Tickets de soporte y atención al cliente.';
-
--- Tabla historial_pedidos: conserva los cambios de estado de cada pedido.
-CREATE TABLE historial_pedidos (
-  id_historial     INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  id_pedido        INT UNSIGNED NOT NULL,
-  estado_anterior  ENUM('pendiente','pagado','enviado','entregado','cancelado','reembolsado') NULL,
-  estado_nuevo     ENUM('pendiente','pagado','enviado','entregado','cancelado','reembolsado') NOT NULL,
-  fecha_cambio     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  id_usuario       INT UNSIGNED NULL,                                -- Usuario o admin que efectuó el cambio
-  comentario       VARCHAR(255) NULL,                                -- Observación opcional
+-- Tabla principal de facturas: documento fiscal generado tras un pago aprobado.
+CREATE TABLE facturas (
+  id_factura          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  id_pedido           INT UNSIGNED NOT NULL UNIQUE,                  -- Relación 1:1 con pedido
+  numero_factura      VARCHAR(50) NOT NULL UNIQUE,                   -- Ejemplo: FV-2025-000123
+  tipo_factura        ENUM('A','B','C') NOT NULL DEFAULT 'B',        -- Tipo según régimen fiscal
+  fecha_emision       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,   -- Fecha/hora de emisión
+  subtotal            DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+  iva_monto           DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+  total               DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+  metodo_pago         ENUM('mercado_pago','transferencia','tarjeta','efectivo') DEFAULT 'mercado_pago',
+  estado_factura      ENUM('emitida','enviada','descargada','anulada') DEFAULT 'emitida',
+  url_pdf             VARCHAR(500) NULL,                             -- URL pública o ruta al archivo PDF
+  hash_verificacion   CHAR(64) NOT NULL,                             -- SHA-256 para verificar integridad
+  observaciones       VARCHAR(255) NULL,
+  created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
-    ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
-    ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB COMMENT='Registro histórico de cambios de estado en los pedidos.';
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB COMMENT='Facturas generadas para los pedidos pagados, con enlace al PDF descargable.';
+
+-- Tabla de envío de facturas: registra el envío automático por correo electrónico.
+CREATE TABLE envio_facturas (
+  id_envio_factura    INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  id_factura          INT UNSIGNED NOT NULL,
+  email_destinatario  VARCHAR(150) NOT NULL,                         -- Correo del cliente
+  asunto              VARCHAR(200) DEFAULT 'Tu factura de compra FigureVerse',
+  cuerpo_mensaje      TEXT NULL,                                     -- Mensaje personalizado o plantilla
+  estado_envio        ENUM('pendiente','enviado','error') DEFAULT 'pendiente',
+  fecha_envio         DATETIME NULL,
+  intento             TINYINT UNSIGNED NOT NULL DEFAULT 0,           -- Intentos de envío
+  error_mensaje       VARCHAR(255) NULL,                             -- Descripción del error si ocurre
+  created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_factura) REFERENCES facturas(id_factura)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB COMMENT='Historial de envíos de facturas al correo electrónico del cliente.';
 
 -- ======================================================================
--- 7️⃣ ÍNDICES ADICIONALES PARA RENDIMIENTO
+-- 7 ÍNDICES ADICIONALES PARA RENDIMIENTO
 -- ======================================================================
 
 -- Índices útiles para mejorar las búsquedas frecuentes.
@@ -381,7 +361,7 @@ CREATE INDEX idx_resenas_producto       ON resenas(id_producto);
 CREATE INDEX idx_soporte_estado         ON soporte(estado);
 
 -- ======================================================================
--- ✅ BASE DE DATOS FigureVerse FINALIZADA
+-- BASE DE DATOS FigureVerse FINALIZADA
 -- ======================================================================
 
 -- Contiene:
