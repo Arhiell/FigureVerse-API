@@ -7,13 +7,15 @@ const express = require("express");
 const router = express.Router();
 const AuthController = require("../controllers/auth.controller");
 const { authJwt } = require("../middlewares/authJwt");
+const validator = require("../middlewares/validator");
+const { registerSchema, loginSchema, updateSchema } = require("../middlewares/validate");
 
 /**
  * Rutas públicas de autenticación
  * No requieren token JWT para ser accedidas
  */
-router.post("/register", AuthController.register);  // Registro de nuevos usuarios
-router.post("/login", AuthController.login);        // Inicio de sesión de usuarios existentes
+router.post("/register", validator(registerSchema), AuthController.register);  // Registro de nuevos usuarios
+router.post("/login", validator(loginSchema), AuthController.login);        // Inicio de sesión de usuarios existentes
 
 /**
  * Rutas protegidas por autenticación
