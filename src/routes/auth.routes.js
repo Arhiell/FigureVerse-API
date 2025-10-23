@@ -1,24 +1,35 @@
+/**
+ * Módulo de rutas de autenticación
+ * Gestiona todas las rutas relacionadas con la autenticación de usuarios
+ * @module routes/auth
+ */
 const express = require("express");
 const router = express.Router();
+const AuthController = require("../controllers/auth.controller");
+const { authJwt } = require("../middlewares/authJwt");
 
-// Rutas de autenticación (se implementarán más adelante)
-router.post("/register", (req, res) => {
-  // Implementación pendiente
-  res.status(501).json({ message: "Registro de usuario - No implementado" });
-});
+/**
+ * Rutas públicas de autenticación
+ * No requieren token JWT para ser accedidas
+ */
+router.post("/register", AuthController.register);  // Registro de nuevos usuarios
+router.post("/login", AuthController.login);        // Inicio de sesión de usuarios existentes
 
-router.post("/login", (req, res) => {
-  // Implementación pendiente
-  res.status(501).json({ message: "Inicio de sesión - No implementado" });
-});
+/**
+ * Rutas protegidas por autenticación
+ * Requieren token JWT válido para ser accedidas
+ */
+router.get("/profile", authJwt, AuthController.profile);  // Obtiene el perfil del usuario autenticado
 
+/**
+ * Rutas para recuperación de contraseña
+ * Pendientes de implementación completa
+ */
 router.post("/forgot-password", (req, res) => {
-  // Implementación pendiente
   res.status(501).json({ message: "Recuperación de contraseña - No implementado" });
 });
 
 router.post("/reset-password", (req, res) => {
-  // Implementación pendiente
   res.status(501).json({ message: "Restablecimiento de contraseña - No implementado" });
 });
 
