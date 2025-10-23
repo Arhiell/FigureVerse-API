@@ -1,193 +1,226 @@
--- ======================================================================
--- Script de testeo general para verificar el correcto funcionamiento del
--- modelo relacional de la base de datos "figureverse", incluyendo:
---  - Integridad referencial (joins entre tablas)
---  - Relaciones lógicas y coherencia de datos
---  - Ejemplos de triggers y funciones simples
---  - Resultados esperados de las principales operaciones
--- ======================================================================
+-- =====================================================================
+-- SCRIPT DE PRUEBAS DE LA BASE DE DATOS: FigureVerse
+-- Autor: Ariel & Bautista
+-- Objetivo: Verificar que las relaciones y datos básicos funcionan correctamente.
+-- =====================================================================
 
 USE figureverse;
 
--- ======================================================================
--- 1) VERIFICACIÓN GENERAL DE DATOS BÁSICOS
--- ----------------------------------------------------------------------
--- Objetivo: comprobar que las tablas principales contienen registros
--- y que los roles/usuarios están correctamente distribuidos.
--- ======================================================================
-
--- Contar usuarios por rol
-SELECT rol, COUNT(*) AS cantidad
+-- =====================================================
+-- PRUEBA 1: Listar todos los usuarios y sus roles
+-- =====================================================
+-- Verifica que existan el super_admin, los admins y los clientes
+SELECT id_usuario, nombre_usuario, rol, estado, fecha_registro
 FROM usuarios
-GROUP BY rol;
+ORDER BY FIELD(rol, 'super_admin','admin','cliente');
 
--- Verificar clientes y administradores con sus nombres de usuario
-SELECT u.id_usuario, u.nombre_usuario, c.nombre AS nombre_cliente, c.apellido AS apellido_cliente
-FROM usuarios u
-LEFT JOIN clientes c ON u.id_usuario = c.id_usuario
-LEFT JOIN administradores a ON u.id_usuario = a.id_usuario
-ORDER BY u.id_usuario;
+-- Esperado:
+-- 1 super_admin, 2 admin, 3 clientes
 
--- ======================================================================
--- 2) RELACIONES ENTRE PRODUCTOS Y CATEGORÍAS
--- ----------------------------------------------------------------------
--- Objetivo: confirmar integridad de FK y correspondencia de categorías
--- ======================================================================
 
--- Productos y sus categorías principales
-SELECT p.id_producto, p.nombre AS producto, c.nombre_categoria AS categoria_principal, p.precio_base, p.stock
-FROM productos p
-INNER JOIN categorias c ON p.id_categoria = c.id_categoria;
+-- =====================================================
+-- PRUEBA 2: Verificar relaciones 1:1 entre usuarios y administradores/clientes
+-- =====================================================
+-- A) Administradores con su información de usuario
+SELECT a.id_admin, u.nombre_usuario, a.nombre, a.apellido, a.cargo, a.area
+FROM administradores a
+JOIN usuarios u ON a.id_usuario = u.id_usuario;
 
--- Variantes de productos (si las hay)
-SELECT v.id_variante, p.nombre AS producto, v.atributo, v.valor, v.precio, v.stock
-FROM variantes_producto v
-INNER JOIN productos p ON v.id_producto = p.id_producto;
+-- B) Clientes con su información de usuario
+SELECT c.id_cliente, u.nombre_usuario, c.nombre, c.apellido, c.ciudad, c.provincia
+FROM clientes c
+JOIN usuarios u ON c.id_usuario = u.id_usuario;
 
--- ======================================================================
--- 3) RELACIONES ENTRE USUARIOS Y CARRITOS
--- ----------------------------------------------------------------------
--- Objetivo: verificar que cada usuario tenga su carrito y sus productos
--- ======================================================================
+-- Esperado:
+-- 3 administradores (1 super_admin incluido)
+-- 3 clientes correctamente vinculados
 
--- Carritos activos y sus propietarios
-SELECT c.id_carrito, u.nombre_usuario, c.estado, COUNT(cd.id_detalle) AS cantidad_items
-FROM carrito c
-LEFT JOIN carrito_detalle cd ON c.id_carrito = cd.id_carrito
-INNER JOIN usuarios u ON c.id_usuario = u.id_usuario
-GROUP BY c.id_carrito;
 
--- Detalle de cada carrito (usuario + productos)
-SELECT u.nombre_usuario, p.nombre AS producto, cd.cantidad, cd.precio_unitario, cd.iva_monto
-FROM carrito_detalle cd
-INNER JOIN carrito c ON cd.id_carrito = c.id_carrito
-INNER JOIN usuarios u ON c.id_usuario = u.id_usuario
-INNER JOIN productos p ON cd.id_producto = p.id_producto
-ORDER BY u.nombre_usuario;
-
--- ======================================================================
--- 4) RELACIÓN COMPLETA: PEDIDOS, PAGOS, FACTURAS Y ENVÍOS
--- ----------------------------------------------------------------------
--- Objetivo: verificar la trazabilidad completa del proceso de compra
--- ======================================================================
-
+-- =====================================================
+-- PRUEBA 3: Listar los productos y su información relacionada
+-- =====================================================
+-- Verifica que los productos tengan categoría, universo y fabricante válidos
 SELECT 
-    u.nombre_usuario AS cliente,
-    p.id_pedido,
-    p.estado AS estado_pedido,
-    pa.estado_pago,
-    f.numero_factura,
-    e.estado_envio,
-    p.total AS monto_total
-FROM pedidos p
-INNER JOIN usuarios u ON p.id_usuario = u.id_usuario
-LEFT JOIN pagos pa ON p.id_pedido = pa.id_pedido
-LEFT JOIN facturas f ON p.id_pedido = f.id_pedido
-LEFT JOIN envios e ON p.id_pedido = e.id_pedido
-ORDER BY p.id_pedido;
+  p.id_producto,
+  p.nombre,
+  c.nombre_categoria AS categoria,
+  u.nombre AS universo,
+  f.nombre AS fabricante,
+  p.precio_base,
+  p.stock
+FROM productos p
+JOIN categorias c ON p.id_categoria = c.id_categoria
+JOIN universos u ON p.id_universo = u.id_universo
+JOIN fabricantes f ON p.id_fabricante = f.id_fabricante;
 
--- ======================================================================
--- 5) VERIFICACIÓN DE CALIFICACIONES Y RESEÑAS
--- ----------------------------------------------------------------------
--- Objetivo: comprobar relación usuario-producto y valoraciones
--- ======================================================================
+-- Esperado:
+-- Funko Pop! Spider-Man  → Marvel / Funko
+-- Goku Super Saiyan PVC  → Anime / Bandai
 
-SELECT r.id_reseña, u.nombre_usuario, p.nombre AS producto, r.calificacion, r.comentario
-FROM resenas r
-INNER JOIN usuarios u ON r.id_usuario = u.id_usuario
-INNER JOIN productos p ON r.id_producto = p.id_producto
-ORDER BY r.fecha_resena DESC;
 
--- ======================================================================
--- 6) TEST DE DESCUENTOS Y RELACIONES N:M
--- ----------------------------------------------------------------------
--- Objetivo: comprobar si los descuentos se asocian correctamente a pedidos
--- ======================================================================
+-- =====================================================
+-- PRUEBA 4: Verificar las variantes de productos
+-- =====================================================
+SELECT 
+  v.id_variante,
+  p.nombre AS producto,
+  v.atributo,
+  v.valor,
+  v.precio,
+  v.stock,
+  v.sku
+FROM variantes_producto v
+JOIN productos p ON v.id_producto = p.id_producto
+ORDER BY p.nombre;
 
-SELECT d.codigo, d.tipo, d.valor, pd.id_pedido, pd.monto_aplicado
-FROM descuentos d
-LEFT JOIN pedidos_descuentos pd ON d.id_descuento = pd.id_descuento;
+-- Esperado:
+-- Spider-Man → Clásica / Traje Negro
+-- Goku → Cabello Dorado
 
--- ======================================================================
--- 7) REGISTROS DE SOPORTE Y LOGS DE ACTIVIDAD
--- ----------------------------------------------------------------------
--- Objetivo: verificar coherencia entre usuario y su interacción
--- ======================================================================
 
-SELECT s.id_soporte, u.nombre_usuario, s.asunto, s.estado
-FROM soporte s
-INNER JOIN usuarios u ON s.id_usuario = u.id_usuario;
+-- =====================================================
+-- PRUEBA 5: Verificar las imágenes asociadas
+-- =====================================================
+SELECT 
+  p.nombre AS producto,
+  i.url_imagen,
+  i.alt_text
+FROM imagenes_productos i
+JOIN productos p ON i.id_producto = p.id_producto;
 
-SELECT l.id_log, u.nombre_usuario, l.accion, l.fecha_hora
-FROM logs l
-LEFT JOIN usuarios u ON l.id_usuario = u.id_usuario
-ORDER BY l.fecha_hora DESC;
+-- Esperado:
+-- Cada producto debe tener al menos una imagen vinculada.
 
--- ======================================================================
--- 8) HISTORIAL DE PEDIDOS
--- ----------------------------------------------------------------------
--- Objetivo: comprobar auditoría de cambios de estado
--- ======================================================================
 
-SELECT h.id_historial, p.id_pedido, h.estado_anterior, h.estado_nuevo, u.nombre_usuario AS responsable
-FROM historial_pedidos h
-INNER JOIN pedidos p ON h.id_pedido = p.id_pedido
-LEFT JOIN usuarios u ON h.id_usuario = u.id_usuario
-ORDER BY h.fecha_cambio DESC;
+-- =====================================================
+-- PRUEBA 6: Verificar el carrito activo del cliente "carlos_fx"
+-- =====================================================
+SELECT 
+  u.nombre_usuario,
+  c.id_carrito,
+  cd.id_detalle,
+  p.nombre AS producto,
+  v.valor AS variante,
+  cd.cantidad,
+  cd.precio_unitario,
+  (cd.precio_unitario + cd.iva_monto) AS total_item
+FROM carrito c
+JOIN carrito_detalle cd ON c.id_carrito = cd.id_carrito
+JOIN productos p ON cd.id_producto = p.id_producto
+LEFT JOIN variantes_producto v ON cd.id_variante = v.id_variante
+JOIN usuarios u ON c.id_usuario = u.id_usuario
+WHERE u.nombre_usuario = 'carlos_fx';
 
--- ======================================================================
--- 9) TRIGGERS Y FUNCIONES (PRUEBAS SIMPLES)
--- ----------------------------------------------------------------------
--- Si tu base aún no tiene triggers, puedes probar estos ejemplos
--- para validar automatizaciones y lógica.
--- ======================================================================
+-- Esperado:
+-- Un carrito activo con 1 producto “Funko Pop! Spider-Man”.
 
--- 9.1 Trigger de auditoría: registrar cada nuevo pedido
-DELIMITER //
-CREATE TRIGGER trg_log_nuevo_pedido
-AFTER INSERT ON pedidos
-FOR EACH ROW
-BEGIN
-  INSERT INTO logs (id_usuario, accion, ip, user_agent)
-  VALUES (NEW.id_usuario, CONCAT('Nuevo pedido registrado (ID ', NEW.id_pedido, ')'),
-          '127.0.0.1', 'TriggerTest');
-END //
-DELIMITER ;
 
--- 9.2 Probar el trigger insertando un nuevo pedido ficticio
-INSERT INTO pedidos (id_usuario, subtotal, descuento_total, costo_envio, total, estado)
-VALUES (3, 10000.00, 0.00, 0.00, 10000.00, 'pendiente');
+-- =====================================================
+-- PRUEBA 7: Verificar el pedido, pago y factura de ese cliente
+-- =====================================================
 
--- 9.3 Verificar que el trigger insertó un registro en logs
-SELECT * FROM logs ORDER BY id_log DESC LIMIT 5;
+-- A) Pedido general
+SELECT 
+  pe.id_pedido,
+  u.nombre_usuario,
+  pe.subtotal,
+  pe.costo_envio,
+  pe.total,
+  pe.estado
+FROM pedidos pe
+JOIN usuarios u ON pe.id_usuario = u.id_usuario
+WHERE u.nombre_usuario = 'carlos_fx';
 
--- 9.4 Función de utilidad: calcular el total de productos en stock
-DELIMITER //
-CREATE FUNCTION fn_total_stock() RETURNS INT
-DETERMINISTIC
-BEGIN
-  DECLARE total INT;
-  SELECT SUM(stock) INTO total FROM productos;
-  RETURN total;
-END //
-DELIMITER ;
+-- B) Detalle del pedido
+SELECT 
+  pd.id_detalle,
+  p.nombre AS producto,
+  v.valor AS variante,
+  pd.cantidad,
+  pd.precio_unitario,
+  pd.iva_monto
+FROM pedido_detalle pd
+JOIN productos p ON pd.id_producto = p.id_producto
+LEFT JOIN variantes_producto v ON pd.id_variante = v.id_variante
+WHERE pd.id_pedido = (SELECT id_pedido FROM pedidos WHERE id_usuario = (SELECT id_usuario FROM usuarios WHERE nombre_usuario='carlos_fx'));
 
--- 9.5 Ejecutar la función
-SELECT fn_total_stock() AS total_productos_en_stock;
+-- C) Pago asociado
+SELECT 
+  pa.id_pago,
+  pa.metodo_pago,
+  pa.estado_pago,
+  pa.monto,
+  pa.fecha_pago
+FROM pagos pa
+WHERE pa.id_pedido = (SELECT id_pedido FROM pedidos WHERE id_usuario = (SELECT id_usuario FROM usuarios WHERE nombre_usuario='carlos_fx'));
 
--- ======================================================================
--- 10) LIMPIEZA DE PRUEBA (opcional)
--- ----------------------------------------------------------------------
--- Eliminar registros de prueba generados por triggers o funciones
--- ======================================================================
+-- D) Factura generada
+SELECT 
+  f.numero_factura,
+  f.tipo_factura,
+  f.subtotal,
+  f.total,
+  f.metodo_pago,
+  f.estado_factura,
+  ef.email_destinatario,
+  ef.estado_envio
+FROM facturas f
+JOIN envio_facturas ef ON ef.id_factura = f.id_factura
+WHERE f.id_pedido = (SELECT id_pedido FROM pedidos WHERE id_usuario = (SELECT id_usuario FROM usuarios WHERE nombre_usuario='carlos_fx'));
 
-DELETE FROM pedidos WHERE estado='pendiente' AND total=10000.00;
-DELETE FROM logs WHERE user_agent='TriggerTest';
+-- Esperado:
+-- Pedido “pagado”, factura emitida y envío pendiente de correo.
 
--- ======================================================================
--- FIN DE TESTEO GENERAL DE BASE DE DATOS
--- ----------------------------------------------------------------------
--- Si todas las consultas devuelven resultados coherentes y sin errores,
--- significa que el modelo funciona correctamente, las relaciones son
--- válidas y las automatizaciones cumplen su función.
--- ======================================================================
+
+-- =====================================================
+-- PRUEBA 8: Consultar el historial del pedido
+-- =====================================================
+SELECT 
+  hp.id_historial,
+  hp.estado_anterior,
+  hp.estado_nuevo,
+  hp.fecha_cambio,
+  u.nombre_usuario AS cambiado_por,
+  hp.comentario
+FROM historial_pedidos hp
+LEFT JOIN usuarios u ON hp.id_usuario = u.id_usuario
+WHERE hp.id_pedido = (SELECT id_pedido FROM pedidos WHERE id_usuario = (SELECT id_usuario FROM usuarios WHERE nombre_usuario='carlos_fx'))
+ORDER BY hp.fecha_cambio;
+
+-- Esperado:
+-- Dos entradas: 
+-- 1. Creado por root_master (pendiente)
+-- 2. Actualizado por admin_akira (pagado)
+
+
+-- =====================================================
+-- PRUEBA 9: Verificar integridad de llaves foráneas
+-- =====================================================
+-- Muestra todas las tablas con referencias válidas
+SELECT 
+  table_name, constraint_name, referenced_table_name
+FROM information_schema.KEY_COLUMN_USAGE
+WHERE referenced_table_name IS NOT NULL
+AND table_schema = 'figureverse';
+
+-- Esperado:
+-- Todas las relaciones fk_clientes_usuario, fk_admins_usuario, fk_prod_cat, etc.
+
+
+-- =====================================================
+-- PRUEBA 10: Consultas agregadas de control
+-- =====================================================
+-- A) Total de usuarios por rol
+SELECT rol, COUNT(*) AS cantidad FROM usuarios GROUP BY rol;
+
+-- B) Total de productos activos
+SELECT COUNT(*) AS productos_activos FROM productos WHERE estado='activo';
+
+-- C) Total de pedidos pagados
+SELECT COUNT(*) AS pedidos_pagados FROM pedidos WHERE estado='pagado';
+
+-- D) Promedio de precio base de productos
+SELECT AVG(precio_base) AS promedio_precio FROM productos;
+
+-- E) Total de stock general
+SELECT SUM(stock) AS stock_total FROM productos;
