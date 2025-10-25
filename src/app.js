@@ -32,6 +32,7 @@ app.use("/api-docs", swaggerConfig.serve, swaggerConfig.setup);
 
 app.use("/auth", require("./routes/auth.routes"));
 app.use("/users", require("./routes/users.routes"));
+app.use("/productos", require("./routes/producto.routes"));
 
 // Middleware de errores
 app.use(errorHandler);
