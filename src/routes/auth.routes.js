@@ -9,11 +9,7 @@ const AuthController = require("../controllers/auth.controller");
 const { authJwt } = require("../middlewares/authJwt");
 const { checkRole } = require("../middlewares/auth");
 const validator = require("../middlewares/validator");
-const {
-  registerSchema,
-  loginSchema,
-  updateSchema,
-} = require("../middlewares/validate");
+const {registerSchema,loginSchema,updateSchema} = require("../middlewares/validate");
 
 // Rutas públicas de autenticación
 router.post("/register", validator(registerSchema), AuthController.register);
