@@ -3,9 +3,11 @@ const router = express.Router();
 const CarritoController = require("../controllers/carrito.controller");
 const { verifyToken } = require("../middlewares/authJwt");
 
+// middelewares de autenticación
+router.use(verifyToken);
 
-router.get("/", verifyToken, CarritoController.getCarrito);
-router.post("/agregar", verifyToken, CarritoController.addItem);
-router.delete("/item/:id_detalle", verifyToken, CarritoController.removeItem);
+router.get("/", CarritoController.getCarrito);
+router.post("/agregar", CarritoController.addItem);
+router.delete("/item/:id_detalle", CarritoController.removeItem);
 
 module.exports = router;
