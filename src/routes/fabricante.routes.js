@@ -5,7 +5,7 @@ const { verifyToken, checkRole } = require('../middlewares/auth');
 
 // Middleware para proteger las rutas
 router.use(verifyToken);
-router.use(checkRole(['admin', 'cliente', 'superadmin']));
+
 
 router.get('/', fabricanteController.listarFabricantes);
 router.get('/:id', fabricanteController.obtenerFabricante);
