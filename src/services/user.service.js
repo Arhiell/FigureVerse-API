@@ -1,11 +1,10 @@
-/**
- * Servicio de usuarios
- */
+
+ // Servicio de usuarios
+
 const pool = require("../config/db");
 
 const UserService = {
-  /**
-   * Actualiza el estado de un usuario
+  /** Actualiza el estado de un usuario
    * @param {number} id_usuario
    * @param {string} estado - 'activo' | 'inhabilitado'
    */

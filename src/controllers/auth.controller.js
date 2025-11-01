@@ -19,22 +19,13 @@ const AuthController = {
    */
   register: async (req, res) => {
     try {
-      const { nombre_usuario, email, password } = req.body;
+        // Asumir que validator ya validó y normalizó req.body
+      const payload = req.body;
 
-      // Validaciones básicas de campos requeridos
-      if (!nombre_usuario || !email || !password) {
-        return res.status(400).json({
-          error: "Todos los campos son obligatorios",
-        });
-      }
+      // Forzar rol por defecto si no viene
+      if (!payload.role) payload.role = "cliente";
 
-      // Por defecto, los usuarios registrados tienen rol "user"
-      const newUser = await AuthService.register({
-        nombre_usuario: nombre_usuario,
-        email,
-        password,
-        role: "cliente",
-      });
+      const newUser = await AuthService.register(payload);
 
       res.status(201).json({
         ok: true,
@@ -90,10 +81,7 @@ const AuthController = {
         user: newAdmin,
       });
     } catch (error) {
-      res.status(400).json({
-        ok: false,
-        error: error.message,
-      });
+      res.status(400).json({ok: false, error: error.message});
     }
   },
 

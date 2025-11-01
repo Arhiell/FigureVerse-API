@@ -158,6 +158,9 @@ const router = express.Router();
 
 const AuthController = require("../controllers/auth.controller");
 const { authJwt } = require("../middlewares/authJwt");
+const { checkRole } = require("../middlewares/auth");
+const validator = require("../middlewares/validators/validator");
+const {registerSchema,loginSchema,updateSchema} = require("../middlewares/validators/validate_user");
 const { checkRole } = require("../middlewares/roles.middleware");
 const validator = require("../middlewares/validator");
 
