@@ -2,7 +2,7 @@ const DescuentosService = require("../services/descuentos.service");
 const {
   createDescuentoSchema,
   updateDescuentoSchema,
-} = require("../validators/descuentos.validator");
+} = require("../middlewares/validators/descuentos.validator");
 
 const DescuentosController = {
   crear: async (req, res, next) => {

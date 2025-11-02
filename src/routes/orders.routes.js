@@ -150,13 +150,13 @@
 const express = require("express");
 const router = express.Router();
 const { authJwt } = require("../middlewares/authJwt");
-const { checkRole } = require("../middlewares/roles.middleware");
+const { checkRole } = require("../middlewares/roleMiddleware");
 const { celebrate, Segments } = require("celebrate");
-const OrdersController = require("../controllers/orders.controller"); // ✅ CORREGIDO
+const OrdersController = require("../controllers/orders.controller");
 const {
   createOrderSchema,
   updateOrderStatusSchema,
-} = require("../validators/orders.validator");
+} = require("../middlewares/validators/orders.validator");
 
 // Todas las rutas requieren autenticación JWT
 router.use(authJwt);

@@ -1,5 +1,5 @@
-const FacturaModel = require("../models/facturas.model");
-const { enviarFacturaEmail } = require("./mailerFactura.service");
+const FacturaModel = require("../models/factura.model");
+const { enviarFacturaEmail } = require("../services/mailerFactura.service");
 
 const FacturacionService = {
   async generarFactura(pedido, metodo_pago) {
@@ -23,4 +23,4 @@ const FacturacionService = {
   },
 };
 
-module.exports = FacturacionService;     
+module.exports = FacturacionService;

@@ -158,17 +158,13 @@ const router = express.Router();
 
 const AuthController = require("../controllers/auth.controller");
 const { authJwt } = require("../middlewares/authJwt");
-const { checkRole } = require("../middlewares/auth");
+const { checkRole } = require("../middlewares/roleMiddleware");
 const validator = require("../middlewares/validators/validator");
-const {registerSchema,loginSchema,updateSchema} = require("../middlewares/validators/validate_user");
-const { checkRole } = require("../middlewares/roles.middleware");
-const validator = require("../middlewares/validator");
-
 const {
   registerSchema,
   loginSchema,
   updateSchema,
-} = require("../middlewares/validate");
+} = require("../middlewares/validators/validate_user");
 
 /**
  * Módulo de rutas de autenticación
@@ -187,6 +183,7 @@ router.get(
     scope: ["profile", "email"],
   })
 );
+
 router.get(
   "/google/callback",
   require("../config/passport").authenticate("google", { session: false }),

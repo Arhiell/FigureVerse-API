@@ -1,10 +1,12 @@
-const db = require('../db');
-const { fabricanteSchema } = require('../validations/fabricante.validate');
+const db = require("../config/db");
+const {
+  fabricanteSchema,
+} = require("../middlewares/validators/validate_facricante");
 // CRUD de fabricantes
 // Listar todos los fabricantes
 async function listarFabricantes(req, res, next) {
   try {
-    const [rows] = await db.query('SELECT * FROM fabricantes');
+    const [rows] = await db.query("SELECT * FROM fabricantes");
     res.json(rows);
   } catch (err) {
     next(err);
@@ -14,8 +16,12 @@ async function listarFabricantes(req, res, next) {
 // Obtener un fabricante por ID
 async function obtenerFabricante(req, res, next) {
   try {
-    const [rows] = await db.query('SELECT * FROM fabricantes WHERE id_fabricante = ?', [req.params.id]);
-    if (rows.length === 0) return res.status(404).json({ message: 'Fabricante no encontrado' });
+    const [rows] = await db.query(
+      "SELECT * FROM fabricantes WHERE id_fabricante = ?",
+      [req.params.id]
+    );
+    if (rows.length === 0)
+      return res.status(404).json({ message: "Fabricante no encontrado" });
     res.json(rows[0]);
   } catch (err) {
     next(err);
@@ -26,12 +32,13 @@ async function obtenerFabricante(req, res, next) {
 async function crearFabricante(req, res, next) {
   try {
     const { error, value } = fabricanteSchema.validate(req.body);
-    if (error) return res.status(400).json({ message: error.details[0].message });
+    if (error)
+      return res.status(400).json({ message: error.details[0].message });
 
-    const [result] = await db.query('INSERT INTO fabricantes SET ?', [value]);
-    res.status(201).json({ message: 'Fabricante creado', id: result.insertId });
+    const [result] = await db.query("INSERT INTO fabricantes SET ?", [value]);
+    res.status(201).json({ message: "Fabricante creado", id: result.insertId });
   } catch (err) {
-    next(err); 
+    next(err);
   }
 }
 
@@ -39,10 +46,14 @@ async function crearFabricante(req, res, next) {
 async function actualizarFabricante(req, res, next) {
   try {
     const { error, value } = fabricanteSchema.validate(req.body);
-    if (error) return res.status(400).json({ message: error.details[0].message });
+    if (error)
+      return res.status(400).json({ message: error.details[0].message });
 
-    await db.query('UPDATE fabricantes SET ? WHERE id_fabricante = ?', [value, req.params.id]);
-    res.json({ message: 'Fabricante actualizado' });
+    await db.query("UPDATE fabricantes SET ? WHERE id_fabricante = ?", [
+      value,
+      req.params.id,
+    ]);
+    res.json({ message: "Fabricante actualizado" });
   } catch (err) {
     next(err);
   }
@@ -51,8 +62,11 @@ async function actualizarFabricante(req, res, next) {
 // Eliminar un fabricante
 async function eliminarFabricante(req, res, next) {
   try {
-    await db.query('UPDATE fabricantes SET estado = "eliminado" WHERE id_fabricante = ?', [req.params.id]);
-    res.json({ message: 'Fabricante eliminado' });
+    await db.query(
+      'UPDATE fabricantes SET estado = "eliminado" WHERE id_fabricante = ?',
+      [req.params.id]
+    );
+    res.json({ message: "Fabricante eliminado" });
   } catch (err) {
     next(err);
   }
@@ -63,5 +77,5 @@ module.exports = {
   obtenerFabricante,
   crearFabricante,
   actualizarFabricante,
-  eliminarFabricante
+  eliminarFabricante,
 };

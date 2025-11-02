@@ -8,7 +8,7 @@
 const express = require("express");
 const router = express.Router();
 const { authJwt } = require("../middlewares/authJwt");
-const { checkRole } = require("../middlewares/roles.middleware");
+const { checkRole } = require("../middlewares/roleMiddleware");
 const UserService = require("../services/user.service");
 
 /**

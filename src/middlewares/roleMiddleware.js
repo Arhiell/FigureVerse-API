@@ -6,9 +6,9 @@
 const checkRole = (...rolesPermitidos) => {
   return (req, res, next) => {
     try {
-      // 🧩 Log interno para depuración (ahora sí, dentro del middleware)
-      console.log("🧩 Rol del usuario:", req.user?.rol);
-      console.log("🔒 Roles permitidos:", rolesPermitidos);
+      // Log interno para depuración (ahora sí, dentro del middleware)
+      console.log("Rol del usuario:", req.user?.rol);
+      console.log("Roles permitidos:", rolesPermitidos);
 
       const rolUsuario = req.user?.rol || req.user?.role;
       if (!rolUsuario) {
@@ -23,7 +23,7 @@ const checkRole = (...rolesPermitidos) => {
 
       next();
     } catch (err) {
-      console.error("❌ Error en verificación de rol:", err.message);
+      console.error("Error en verificación de rol:", err.message);
       return res.status(500).json({ error: "Error en verificación de rol" });
     }
   };

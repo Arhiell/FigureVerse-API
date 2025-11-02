@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const DescuentosController = require("../controllers/descuentos.controller");
 const { authJwt } = require("../middlewares/authJwt");
-const { checkRole } = require("../middlewares/roles.middleware");
+const { checkRole } = require("../middlewares/roleMiddleware");
 
 // Middleware global de autenticación
 router.use(authJwt);

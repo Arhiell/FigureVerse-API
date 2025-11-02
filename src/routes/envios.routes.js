@@ -137,7 +137,7 @@ const EnviosController = require("../controllers/envios.controller");
 const {
   createEnvioSchema,
   updateEnvioSchema,
-} = require("../validators/envios.validator");
+} = require("../middlewares/validators/envios.validator");
 
 // Protección por JWT para todas las rutas de envíos
 router.use(authJwt);

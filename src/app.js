@@ -47,10 +47,10 @@ app.use("/users", require("./routes/users.routes"));
 app.use("/productos", require("./routes/producto.routes"));
 app.use("/categorias", require("./routes/categoria.routes"));
 app.use("/universos", require("./routes/universos.routes"));
-app.use('/api/variantes', require('./routes/variante.routes'));
-app.use('/api/imagenes', require('./routes/imagen.routes'));
+app.use("/api/variantes", require("./routes/variante.routes"));
+app.use("/api/imagenes", require("./routes/imagen.routes"));
 app.use("/carrito", require("./routes/carrito.routes"));
-app.use("/facturas", require("./routes/factura.routes"));
+app.use("/facturas", require("./routes/facturacion.routes"));
 app.use("/orders", require("./routes/orders.routes"));
 
 app.use("/pedidos", ordersRoutes);
