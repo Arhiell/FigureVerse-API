@@ -9,14 +9,13 @@ const registerSchema = Joi.object({
   }),
   avatar_url: Joi.string().uri().optional(),
   role: Joi.string().valid("cliente", "admin", "superadmin").default("cliente"),
-  fecha_nacimiento: Joi.date().less("1/01/2010").optional(),
   clienteData: Joi.object({
     nombre: Joi.string().max(100).required(),
     apellido: Joi.string().max(100).required(),
     telefono: Joi.string().max(25).required(),
     dni: Joi.string().max(20).required(),
     direccion: Joi.string().max(255).required(),
-    numero_casa: Joi.string().max(10).optional(),
+    numero: Joi.string().max(10).optional(),
     piso: Joi.string().max(10).optional(),
     departamento: Joi.string().max(10).optional(),
     referencia: Joi.string().max(255).optional(),
@@ -24,6 +23,7 @@ const registerSchema = Joi.object({
     pais: Joi.string().max(100).required(),
     ciudad: Joi.string().max(100).required(),
     codigo_postal: Joi.string().max(20).required(),
+    fecha_nacimiento: Joi.date().less("1/01/2010").optional(),
   }),
 });
 
