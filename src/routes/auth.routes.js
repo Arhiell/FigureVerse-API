@@ -146,11 +146,77 @@
  *     tags: [Autenticación]
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nombre_usuario
+ *               - email
+ *               - password
+ *               - nombre
+ *               - apellido
+ *               - dni
+ *               - cargo
+ *             properties:
+ *               nombre_usuario:
+ *                 type: string
+ *                 example: "MarcoAdmin"
+ *               email:
+ *                 type: string
+ *                 example: "marco@figureverse.com"
+ *               password:
+ *                 type: string
+ *                 example: "12345678"
+ *               nombre:
+ *                 type: string
+ *                 example: "Marco"
+ *               apellido:
+ *                 type: string
+ *                 example: "Sosca"
+ *               dni:
+ *                 type: string
+ *                 example: "38222111"
+ *               telefono:
+ *                 type: string
+ *                 example: "3794112233"
+ *               cargo:
+ *                 type: string
+ *                 example: "Supervisor de Ventas"
+ *               area:
+ *                 type: string
+ *                 enum: [ventas, inventario, marketing, soporte, otro]
+ *                 example: "ventas"
  *     responses:
  *       201:
  *         description: Administrador registrado correctamente.
+ *         content:
+ *           application/json:
+ *             example:
+ *               ok: true
+ *               message: "Administrador registrado correctamente"
+ *               user:
+ *                 id_usuario: 6
+ *                 nombre_usuario: "MarcoAdmin"
+ *                 email: "marco@figureverse.com"
+ *                 rol: "admin"
+ *                 estado: "activo"
+ *       400:
+ *         description: Datos inválidos o campos faltantes.
+ *         content:
+ *           application/json:
+ *             example:
+ *               ok: false
+ *               error: "El correo electrónico ya está registrado"
  *       403:
  *         description: Acceso denegado. Solo super_admin autorizado.
+ *         content:
+ *           application/json:
+ *             example:
+ *               ok: false
+ *               error: "No tienes permisos para registrar administradores"
  */
 
 const express = require("express");

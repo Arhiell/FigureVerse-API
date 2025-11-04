@@ -39,6 +39,16 @@ const PagoModel = {
     const [rows] = await pool.query("SELECT * FROM pagos WHERE id_pago = ?", [id_pago]);
     return rows[0];
   },
+
+  // Actualizar estado manualmente por id_pago
+  actualizarEstadoPorIdPago: async (id_pago, nuevoEstado, rawJson) => {
+    await pool.query(
+      `UPDATE pagos
+       SET estado_pago = ?, fecha_pago = NOW(), raw_gateway_json = ?
+       WHERE id_pago = ?`,
+      [nuevoEstado, JSON.stringify(rawJson), id_pago]
+    );
+  },
 };
 
 module.exports = PagoModel;

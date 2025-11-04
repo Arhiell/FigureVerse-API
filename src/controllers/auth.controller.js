@@ -3,7 +3,7 @@
  * @module services/auth
  */
 const AuthService = require("../services/auth.service");
-
+const pool = require("../config/db");
 /**
  * Controlador de autenticación
  * Gestiona las peticiones HTTP relacionadas con la autenticación

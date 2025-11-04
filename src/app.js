@@ -52,7 +52,7 @@ app.use("/api/imagenes", require("./routes/imagen.routes"));
 app.use("/carrito", require("./routes/carrito.routes"));
 app.use("/facturas", require("./routes/facturacion.routes"));
 app.use("/orders", require("./routes/orders.routes"));
-
+app.use("/fabricantes", require("./routes/fabricante.routes"));
 app.use("/pedidos", ordersRoutes);
 app.use("/pagos", pagosRoutes);
 app.use("/envios", enviosRoutes);

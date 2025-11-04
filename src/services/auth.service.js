@@ -30,7 +30,7 @@ const AuthService = {
    * @param {string} clientData.apellido - Apellido del cliente
    * @param {string} clientData.dni - DNI del cliente
    * @param {Date} clientData.fecha_nacimiento - Fecha de nacimiento del cliente
-   * @param {string} clienteData.numero_casa - Número de casa del cliente
+   * @param {string} clienteData.numero - Número de casa del cliente
    * @param {string} clienteData.piso - Piso del cliente
    * @param {string} clienteData.departamento - Departamento del cliente
    * @param {string} clienteData.referencia - Referencia del cliente
@@ -42,7 +42,7 @@ const AuthService = {
    * @throws {Error} Si el correo ya está registrado
    */
   register: async ({ nombre_usuario, email, password, role = "cliente" , nombre, apellido, dni, fecha_nacimiento, 
-    direccion, telefono, numero_casa, piso, departamento, referencia, 
+    direccion, telefono, numero, piso, departamento, referencia, 
     provincia, pais, ciudad, codigo_postal }) => {
     const conn = await pool.getConnection();
     try {
@@ -66,14 +66,14 @@ const AuthService = {
         "INSERT INTO usuarios (nombre_usuario, email, password_hash, rol, estado) VALUES (?, ?, ?, ?, 'activo')",
         [nombre_usuario, email, hashedPassword, role]
       );
-
+      // Obtener el ID del usuario recién insertado
       const userId = result.insertId;
 
       // Si el rol es cliente, crear entrada en tabla clientes
       if (role === 'cliente') {
         await conn.query(
-          "INSERT INTO clientes (id_usuario, fecha_registro, direccion, telefono, nombre, apellido, dni, fecha_nacimiento, numero_casa, piso, departamento, referencia, provincia, pais, ciudad, codigo_postal) VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-          [userId, direccion, telefono, nombre, apellido, dni, fecha_nacimiento, numero_casa, piso, departamento, referencia, provincia, pais, ciudad, codigo_postal]
+          "INSERT INTO clientes (id_usuario, direccion, telefono, nombre, apellido, dni, fecha_nacimiento, numero, piso, departamento, referencia, provincia, pais, ciudad, codigo_postal) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+          [userId, direccion, telefono, nombre, apellido, dni, fecha_nacimiento, numero, piso, departamento, referencia, provincia, pais, ciudad, codigo_postal]
         );
       }
 

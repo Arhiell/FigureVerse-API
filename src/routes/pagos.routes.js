@@ -36,6 +36,7 @@
  *     summary: Webhook de Mercado Pago
  *     tags: [Pagos]
  *     description: Recibe notificaciones automáticas y actualiza el estado del pago.
+ *     security: []
  *     responses:
  *       200:
  *         description: Webhook procesado correctamente.
@@ -66,7 +67,17 @@ const { authJwt } = require("../middlewares/authJwt");
 const { checkRole } = require("../middlewares/roleMiddleware");
 const PagosController = require("../controllers/pagos.controller");
 
-// Protege todas las rutas con JWT
+/**
+ * Webhook de Mercado Pago (sin autenticación)
+ * Nota: Este endpoint no requiere JWT y es consumido por Mercado Pago.
+ */
+router.post(
+  "/callback",
+  express.raw({ type: "*/*" }),
+  PagosController.recibirWebhook
+);
+
+// Protege el resto de rutas de pagos con JWT
 router.use(authJwt);
 
 /**
@@ -75,21 +86,57 @@ router.use(authJwt);
 router.post("/", PagosController.createPayment);
 
 /**
- * Webhook de Mercado Pago (sin autenticación)
- */
-router.post(
-  "/callback",
-  express.raw({ type: "*/*" }),
-  PagosController.recibirWebhook
-);
-
-/**
  * Consultar estado de un pago
  */
 router.get(
   "/:id",
   checkRole("cliente", "admin", "super_admin"),
   PagosController.obtenerPago
+);
+
+/**
+ * @swagger
+ * /pagos/{id}/estado:
+ *   put:
+ *     summary: Actualizar estado del pago manualmente (admin/super_admin)
+ *     tags: [Pagos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - estado
+ *             properties:
+ *               estado:
+ *                 type: string
+ *                 enum: [pendiente, aprobado, rechazado]
+ *               motivo:
+ *                 type: string
+ *                 example: "Aprobado manualmente por verificación contable"
+ *     responses:
+ *       200:
+ *         description: Estado actualizado correctamente.
+ *       400:
+ *         description: Estado inválido.
+ *       404:
+ *         description: Pago no encontrado.
+ */
+
+// Actualizar estado del pago manualmente
+router.put(
+  "/:id/estado",
+  checkRole("admin", "super_admin"),
+  PagosController.actualizarEstadoManual
 );
 
 module.exports = router;
