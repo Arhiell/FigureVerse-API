@@ -1,6 +1,9 @@
 // SERVICIO DE PAGOS (interacción con SDK)
 const { client, Preference, Payment } = require("../config/mercadoPago");
 const PagoModel = require("../models/pagos.model");
+const OrdersService = require("../services/orders.service");
+const EnviosService = require("../services/envios.service");
+const FacturacionService = require("../services/factura.service");
 
 const PagoService = {
   // Crear una preferencia de pago y registrar en la BD
@@ -56,10 +59,37 @@ const PagoService = {
       // Intento mapear por external_reference (id_pedido)
       const externalRef = rawPayment?.external_reference;
       if (externalRef) {
-        await PagoModel.actualizarEstadoPorPedido(Number(externalRef), estado, rawPayment);
+        const id_pedido = Number(externalRef);
+        await PagoModel.actualizarEstadoPorPedido(id_pedido, estado, rawPayment);
+
+        // Automatismos si el estado implica pago aprobado
+        if (estado === "approved" || estado === "aprobado") {
+          try {
+            // Actualizar estado del pedido a 'pagado'
+            await OrdersService.updateOrderStatus(
+              id_pedido,
+              null,
+              "pagado",
+              "Actualización automática por webhook de pago aprobado"
+            );
+
+            // Crear envío para el pedido (si no existe)
+            await EnviosService.crearEnvio({ id_pedido });
+
+            // Emitir factura y enviar email
+            const pedidoCompleto = await OrdersService.getOrderById(id_pedido);
+            await FacturacionService.generarFactura(
+              pedidoCompleto.pedido,
+              "Mercado Pago"
+            );
+          } catch (autoErr) {
+            console.warn("Automatismos post-aprobación con errores:", autoErr?.message || autoErr);
+          }
+        }
       } else {
         // Fallback: actualizar por id_transaccion (payment id)
         await PagoModel.actualizarEstado(idTransaccion, estado, rawPayment);
+        // Nota: sin external_reference no podemos inferir id_pedido de forma confiable aquí.
       }
     } catch (error) {
       console.error("Error procesando webhook:", error);

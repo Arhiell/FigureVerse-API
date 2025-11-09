@@ -58,7 +58,17 @@ const AuthController = {
         });
       }
 
-      const { nombre_usuario, email, password } = req.body;
+      const {
+        nombre_usuario,
+        email,
+        password,
+        nombre,
+        apellido,
+        dni,
+        telefono,
+        cargo,
+        area,
+      } = req.body;
 
       // Validaciones básicas de campos requeridos
       if (!nombre_usuario || !email || !password) {
@@ -67,12 +77,27 @@ const AuthController = {
         });
       }
 
+      // Validaciones mínimas para perfil de administrador
+      if (!nombre || !apellido || !dni || !cargo) {
+        return res.status(400).json({
+          ok: false,
+          error:
+            "Campos de administrador faltantes: nombre, apellido, dni y cargo son obligatorios",
+        });
+      }
+
       // Registrar usuario con rol "admin"
       const newAdmin = await AuthService.register({
-        nombre_usuario: nombre_usuario,
+        nombre_usuario,
         email,
         password,
         role: "admin",
+        nombre,
+        apellido,
+        dni,
+        telefono,
+        cargo,
+        area,
       });
 
       res.status(201).json({

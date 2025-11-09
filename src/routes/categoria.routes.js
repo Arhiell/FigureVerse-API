@@ -151,17 +151,17 @@ router.get("/", categoriaController.listarCategorias);
 router.get("/:id", categoriaController.obtenerCategoria);
 router.post(
   "/",
-  checkRole("admin", "superadmin"),
+  checkRole("admin", "super_admin"),
   categoriaController.crearCategoria
 );
 router.put(
   "/:id",
-  checkRole("admin", "superadmin"),
+  checkRole("admin", "super_admin"),
   categoriaController.actualizarCategoria
 );
 router.delete(
   "/:id",
-  checkRole("admin", "superadmin"),
+  checkRole("admin", "super_admin"),
   categoriaController.eliminarCategoria
 );
 

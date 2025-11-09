@@ -157,17 +157,17 @@ router.get("/", fabricanteController.listarFabricantes);
 router.get("/:id", fabricanteController.obtenerFabricante);
 router.post(
   "/",
-  checkRole("admin", "superadmin"),
+  checkRole("admin", "super_admin"),
   fabricanteController.crearFabricante
 );
 router.put(
   "/:id",
-  checkRole("admin", "superadmin"),
+  checkRole("admin", "super_admin"),
   fabricanteController.actualizarFabricante
 );
 router.delete(
   "/:id",
-  checkRole("admin", "superadmin"),
+  checkRole("admin", "super_admin"),
   fabricanteController.eliminarFabricante
 );
 

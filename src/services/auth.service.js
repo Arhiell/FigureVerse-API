@@ -30,7 +30,7 @@ const AuthService = {
    * @param {string} clientData.apellido - Apellido del cliente
    * @param {string} clientData.dni - DNI del cliente
    * @param {Date} clientData.fecha_nacimiento - Fecha de nacimiento del cliente
-   * @param {string} clienteData.numero_casa - Número de casa del cliente
+   * @param {string} clienteData.numero - Número de casa del cliente
    * @param {string} clienteData.piso - Piso del cliente
    * @param {string} clienteData.departamento - Departamento del cliente
    * @param {string} clienteData.referencia - Referencia del cliente
@@ -41,9 +41,29 @@ const AuthService = {
    * @returns {Object} Datos del usuario registrado (sin contraseña)
    * @throws {Error} Si el correo ya está registrado
    */
-  register: async ({ nombre_usuario, email, password, role = "cliente" , nombre, apellido, dni, fecha_nacimiento, 
-    direccion, telefono, numero_casa, piso, departamento, referencia, 
-    provincia, pais, ciudad, codigo_postal }) => {
+  register: async ({
+    nombre_usuario,
+    email,
+    password,
+    role = "cliente",
+    nombre,
+    apellido,
+    dni,
+    fecha_nacimiento,
+    direccion,
+    telefono,
+    numero,
+    piso,
+    departamento,
+    referencia,
+    provincia,
+    pais,
+    ciudad,
+    codigo_postal,
+    // Campos específicos para administradores
+    cargo,
+    area,
+  }) => {
     const conn = await pool.getConnection();
     try {
       await conn.beginTransaction();
@@ -70,10 +90,41 @@ const AuthService = {
       const userId = result.insertId;
 
       // Si el rol es cliente, crear entrada en tabla clientes
-      if (role === 'cliente') {
+      if (role === "cliente") {
+        if (direccion && nombre && apellido && dni) {
+          await conn.query(
+            "INSERT INTO clientes (id_usuario, direccion, telefono, nombre, apellido, dni, fecha_nacimiento, numero, piso, departamento, referencia, provincia, pais, ciudad, codigo_postal) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+              userId,
+              direccion,
+              telefono,
+              nombre,
+              apellido,
+              dni,
+              fecha_nacimiento,
+              numero,
+              piso,
+              departamento,
+              referencia,
+              provincia,
+              pais,
+              ciudad,
+              codigo_postal,
+            ]
+          );
+        }
+      }
+
+      // Si el rol es admin, crear entrada en tabla administradores
+      if (role === "admin") {
+        if (!nombre || !apellido || !dni || !cargo) {
+          throw new Error(
+            "Datos de administrador incompletos: nombre, apellido, dni y cargo son obligatorios"
+          );
+        }
         await conn.query(
-          "INSERT INTO clientes (id_usuario, fecha_registro, direccion, telefono, nombre, apellido, dni, fecha_nacimiento, numero_casa, piso, departamento, referencia, provincia, pais, ciudad, codigo_postal) VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-          [userId, direccion, telefono, nombre, apellido, dni, fecha_nacimiento, numero_casa, piso, departamento, referencia, provincia, pais, ciudad, codigo_postal]
+          "INSERT INTO administradores (id_usuario, nombre, apellido, dni, telefono, cargo, area) VALUES (?, ?, ?, ?, ?, ?, ?)",
+          [userId, nombre, apellido, dni, telefono || null, cargo, area || "otro"]
         );
       }
 
@@ -86,7 +137,7 @@ const AuthService = {
         rol: role,
         estado: "activo",
       };
-    }catch(error){
+    } catch (error) {
       await conn.rollback();
       throw error;
     } finally {

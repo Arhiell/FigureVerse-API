@@ -1,4 +1,5 @@
-const pool = require("../config/db");
+const db = require("../config/db");
+const { createCategoriaSchema, updateCategoriaSchema } = require("../middlewares/validators/validate_categorias");
 
 // CRUD de categorías
 // Crear categoría
@@ -30,7 +31,7 @@ async function obtenerCategoria(req, res, next) {
 // Crear nueva categoría
 async function crearCategoria(req, res, next) {
   try {
-    const { error, value } = categoriaSchema.validate(req.body);
+    const { error, value } = createCategoriaSchema.validate(req.body);
     if (error)
       return res.status(400).json({ message: error.details[0].message });
 
@@ -44,7 +45,7 @@ async function crearCategoria(req, res, next) {
 // Actualizar categoría
 async function actualizarCategoria(req, res, next) {
   try {
-    const { error, value } = categoriaSchema.validate(req.body);
+    const { error, value } = updateCategoriaSchema.validate(req.body);
     if (error)
       return res.status(400).json({ message: error.details[0].message });
 
@@ -62,7 +63,7 @@ async function actualizarCategoria(req, res, next) {
 async function eliminarCategoria(req, res, next) {
   try {
     await db.query(
-      'UPDATE categorias SET estado = "inactivo" WHERE id_categoria = ?',
+      'UPDATE categorias SET estado = "inactiva" WHERE id_categoria = ?',
       [req.params.id]
     );
     res.json({ message: "Categoría eliminada" });

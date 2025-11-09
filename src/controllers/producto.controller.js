@@ -120,6 +120,18 @@ async function eliminarProducto(req, res, next) {
     );
     if (result.affectedRows === 0)
       return res.status(404).json({ message: "Producto no encontrado" });
+
+    // Eliminar variantes asociadas al producto
+    await pool.execute(
+      `DELETE FROM variantes_producto WHERE id_producto = ?`,
+      [id]
+    );
+
+    // Eliminar imágenes asociadas al producto
+    await pool.execute(
+      `DELETE FROM imagenes_productos WHERE id_producto = ?`,
+      [id]
+    );
     res.json({ message: "Producto eliminado correctamente" });
   } catch (err) {
     next(err);
