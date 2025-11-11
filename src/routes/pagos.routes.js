@@ -86,12 +86,82 @@ router.use(authJwt);
 router.post("/", PagosController.createPayment);
 
 /**
+ * Listar todos los pagos (admin/super_admin)
+ */
+router.get(
+  "/",
+  checkRole("admin", "super_admin"),
+  PagosController.listarPagos
+);
+
+// Protege el resto de rutas de pagos con JWT
+router.use(authJwt);
+
+/**
+ * Iniciar un nuevo pago
+ */
+router.post("/", PagosController.createPayment);
+
+/**
+ * @swagger
+ * /pagos:
+ *   get:
+ *     summary: Lista todos los pagos registrados.
+ *     tags: [Pagos]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Listado de pagos.
+ */
+
+/**
+ * Listar pagos pendientes (admin/super_admin)
+ */
+router.get(
+  "/pendientes",
+  checkRole("admin", "super_admin"),
+  PagosController.listarPendientes
+);
+
+/**
+ * @swagger
+ * /pagos/pendientes:
+ *   get:
+ *     summary: Lista pagos con estado pendiente.
+ *     tags: [Pagos]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Listado de pagos pendientes.
+ */
+
+/**
  * Consultar estado de un pago
  */
 router.get(
   "/:id",
   checkRole("cliente", "admin", "super_admin"),
   PagosController.obtenerPago
+);
+
+/**
+ * Listar todos los pagos (admin/super_admin)
+ */
+router.get(
+  "/",
+  checkRole("admin", "super_admin"),
+  PagosController.listarPagos
+);
+
+/**
+ * Listar pagos pendientes (admin/super_admin)
+ */
+router.get(
+  "/pendientes",
+  checkRole("admin", "super_admin"),
+  PagosController.listarPendientes
 );
 
 /**
@@ -138,5 +208,50 @@ router.put(
   checkRole("admin", "super_admin"),
   PagosController.actualizarEstadoManual
 );
+
+// Alias PATCH para actualizar estado del pago
+router.patch(
+  "/:id/estado",
+  checkRole("admin", "super_admin"),
+  PagosController.actualizarEstadoManual
+);
+
+/**
+ * @swagger
+ * /pagos/{id}/estado:
+ *   patch:
+ *     summary: Actualiza manualmente el estado del pago (alias de PUT).
+ *     tags: [Pagos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - estado
+ *             properties:
+ *               estado:
+ *                 type: string
+ *                 enum: [pendiente, aprobado, rechazado]
+ *               motivo:
+ *                 type: string
+ *                 example: "Aprobado manualmente por verificación contable"
+ *     responses:
+ *       200:
+ *         description: Estado actualizado correctamente.
+ *       400:
+ *         description: Estado inválido.
+ *       404:
+ *         description: Pago no encontrado.
+ */
 
 module.exports = router;

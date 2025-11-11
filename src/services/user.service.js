@@ -1,5 +1,5 @@
 
- // Servicio de usuarios
+// Servicio de usuarios
 
 const pool = require("../config/db");
 
@@ -29,7 +29,20 @@ const UserService = {
     } finally {
       conn.release();
     }
-  }
+  },
+
+  /**
+   * Obtiene un usuario por email
+   */
+  async getByEmail(email) {
+    const conn = await pool.getConnection();
+    try {
+      const [rows] = await conn.query("SELECT * FROM usuarios WHERE email = ?", [email]);
+      return rows[0] || null;
+    } finally {
+      conn.release();
+    }
+  },
 };
 
 module.exports = UserService;

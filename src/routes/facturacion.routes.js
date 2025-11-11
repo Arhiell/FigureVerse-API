@@ -81,4 +81,58 @@ router.post(
   FacturacionController.emitirFactura
 );
 
+/**
+ * @swagger
+ * /facturas/{id}:
+ *   get:
+ *     summary: Obtiene una factura por su ID.
+ *     tags: [Facturación]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Factura encontrada.
+ *       404:
+ *         description: Factura no encontrada.
+ */
+router.get(
+  "/:id",
+  authJwt,
+  checkRole("admin", "super_admin"),
+  FacturacionController.obtenerFacturaPorId
+);
+
+/**
+ * @swagger
+ * /facturas/pedido/{id_pedido}:
+ *   get:
+ *     summary: Obtiene la factura asociada a un pedido por su ID.
+ *     tags: [Facturación]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id_pedido
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Factura encontrada para el pedido.
+ *       404:
+ *         description: No existe factura para ese pedido.
+ */
+router.get(
+  "/pedido/:id_pedido",
+  authJwt,
+  checkRole("admin", "super_admin"),
+  FacturacionController.obtenerFacturaPorPedido
+);
+
 module.exports = router;

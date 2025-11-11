@@ -174,7 +174,7 @@
  * @swagger
  * /productos/{id}:
  *   delete:
- *     summary: Marca un producto como inactivo (solo administradores).
+ *     summary: Marca un producto como inactivo y elimina sus variantes e imágenes (solo administradores).
  *     tags: [Productos]
  *     security:
  *       - bearerAuth: []
@@ -187,7 +187,7 @@
  *         description: ID del producto a eliminar.
  *     responses:
  *       200:
- *         description: Producto eliminado correctamente.
+ *         description: Producto eliminado correctamente, variantes e imágenes asociadas removidas.
  *       404:
  *         description: Producto no encontrado.
  *       403:
@@ -208,27 +208,27 @@ router.use(authJwt);
 // Rutas CRUD
 router.post(
   "/",
-  checkRole("admin", "superadmin"),
+  checkRole("admin", "super_admin"),
   productoController.crearProducto
 );
 router.get(
   "/",
-  checkRole("admin", "cliente", "superadmin"),
+  checkRole("admin", "cliente", "super_admin"),
   productoController.listarProductos
 );
 router.get(
   "/:id",
-  checkRole("admin", "cliente", "superadmin"),
+  checkRole("admin", "cliente", "super_admin"),
   productoController.obtenerProducto
 );
 router.put(
   "/:id",
-  checkRole("admin", "superadmin"),
+  checkRole("admin", "super_admin"),
   productoController.actualizarProducto
 );
 router.delete(
   "/:id",
-  checkRole("admin", "superadmin"),
+  checkRole("admin", "super_admin"),
   productoController.eliminarProducto
 );
 

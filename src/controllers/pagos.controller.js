@@ -2,9 +2,54 @@
 const PagoService = require("../services/pagos.service");
 const PagoModel = require("../models/pagos.model");
 const HistorialService = require("../services/historial.service");
+const EnviosService = require("../services/envios.service");
+const OrdersService = require("../services/orders.service");
+const FacturacionService = require("../services/factura.service");
 
 const PagosController = {
+  // Listar todos los pagos (admin/super_admin)
+  /**
+   * Lista todos los pagos registrados en el sistema.
+   * Requiere rol admin/super_admin.
+   *
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * @param {Function} next
+   */
+  listarPagos: async (req, res, next) => {
+    try {
+      const pagos = await PagoModel.listar();
+      res.json({ ok: true, data: pagos });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // Listar pagos pendientes (admin/super_admin)
+  /**
+   * Lista los pagos con estado "pendiente".
+   * Requiere rol admin/super_admin.
+   *
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * @param {Function} next
+   */
+  listarPendientes: async (req, res, next) => {
+    try {
+      const pagos = await PagoModel.listarPorEstado("pendiente");
+      res.json({ ok: true, data: pagos });
+    } catch (error) {
+      next(error);
+    }
+  },
   // Inicia el proceso de pago (cliente)
+  /**
+   * Crea una preferencia de pago para un pedido y registra el pago pendiente.
+   *
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * @param {Function} next
+   */
   createPayment: async (req, res, next) => {
     try {
       const { id_pedido, monto } = req.body;
@@ -24,6 +69,12 @@ const PagosController = {
   },
 
   // Recibe el webhook desde Mercado Pago
+  /**
+   * Procesa el webhook de Mercado Pago. No requiere autenticación.
+   *
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   */
   recibirWebhook: async (req, res) => {
     try {
       const payload = Buffer.isBuffer(req.body)
@@ -38,6 +89,13 @@ const PagosController = {
   },
 
   // Consultar estado de un pago
+  /**
+   * Devuelve los datos de un pago por id_pago.
+   *
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * @param {Function} next
+   */
   obtenerPago: async (req, res, next) => {
     try {
       const pago = await PagoModel.obtenerPorId(req.params.id);
@@ -50,6 +108,14 @@ const PagosController = {
   },
 
   // Actualizar estado manualmente (admin/super_admin)
+  /**
+   * Actualiza manualmente el estado de un pago y dispara automatismos si queda aprobado.
+   * Automatismos: actualizar pedido a 'pagado', crear envío y emitir factura.
+   *
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * @param {Function} next
+   */
   actualizarEstadoManual: async (req, res, next) => {
     try {
       const { id } = req.params;
@@ -95,10 +161,38 @@ const PagosController = {
         }
       }
 
+      // Si el pago queda aprobado, disparar automatismos: actualizar pedido, crear envío y emitir factura
+      let automatismos = {};
+      if (estado === "aprobado" && pago.id_pedido) {
+        try {
+          // Actualizar estado del pedido a 'pagado'
+          await OrdersService.updateOrderStatus(
+            pago.id_pedido,
+            req.user?.id_usuario || null,
+            "pagado",
+            "Actualización automática por pago aprobado"
+          );
+
+          // Crear envío (si no existe)
+          const envio = await EnviosService.crearEnvio({ id_pedido: pago.id_pedido });
+          automatismos.envio = envio;
+
+          // Emitir factura y enviar email
+          const pedidoCompleto = await OrdersService.getOrderById(pago.id_pedido);
+          const factura = await FacturacionService.generarFactura(
+            pedidoCompleto.pedido,
+            "Mercado Pago"
+          );
+          automatismos.factura = { id_factura: factura.id_factura, numero_factura: factura.numero_factura };
+        } catch (autoErr) {
+          automatismos.error = autoErr?.message || String(autoErr);
+        }
+      }
+
       res.json({
         ok: true,
         message: "Estado de pago actualizado manualmente",
-        data: { id_pago: Number(id), estado },
+        data: { id_pago: Number(id), estado, automatismos },
       });
     } catch (error) {
       next(error);

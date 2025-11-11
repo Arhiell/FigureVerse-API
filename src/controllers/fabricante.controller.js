@@ -1,6 +1,7 @@
 const db = require("../config/db");
 const {
-  fabricanteSchema,
+  fabricanteCreateSchema,
+  fabricanteUpdateSchema,
 } = require("../middlewares/validators/validate_facricante");
 // CRUD de fabricantes
 // Listar todos los fabricantes
@@ -31,7 +32,7 @@ async function obtenerFabricante(req, res, next) {
 // Crear un nuevo fabricante
 async function crearFabricante(req, res, next) {
   try {
-    const { error, value } = fabricanteSchema.validate(req.body);
+    const { error, value } = fabricanteCreateSchema.validate(req.body);
     if (error)
       return res.status(400).json({ message: error.details[0].message });
 
@@ -45,7 +46,7 @@ async function crearFabricante(req, res, next) {
 // Actualizar un fabricante existente
 async function actualizarFabricante(req, res, next) {
   try {
-    const { error, value } = fabricanteSchema.validate(req.body);
+    const { error, value } = fabricanteUpdateSchema.validate(req.body);
     if (error)
       return res.status(400).json({ message: error.details[0].message });
 
@@ -63,7 +64,7 @@ async function actualizarFabricante(req, res, next) {
 async function eliminarFabricante(req, res, next) {
   try {
     await db.query(
-      'UPDATE fabricantes SET estado = "eliminado" WHERE id_fabricante = ?',
+      'DELETE FROM fabricantes WHERE id_fabricante = ?',
       [req.params.id]
     );
     res.json({ message: "Fabricante eliminado" });
