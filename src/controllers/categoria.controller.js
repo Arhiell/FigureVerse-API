@@ -1,8 +1,5 @@
 const db = require("../config/db");
-<<<<<<< HEAD
-=======
 const { createCategoriaSchema, updateCategoriaSchema } = require("../middlewares/validators/validate_categorias");
->>>>>>> ec3d53dcd7ae846eddcc04c3c7c90551daad0a9c
 
 // CRUD de categorías
 // Crear categoría

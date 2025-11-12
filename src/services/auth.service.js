@@ -41,11 +41,6 @@ const AuthService = {
    * @returns {Object} Datos del usuario registrado (sin contraseña)
    * @throws {Error} Si el correo ya está registrado
    */
-<<<<<<< HEAD
-  register: async ({ nombre_usuario, email, password, role = "cliente" , nombre, apellido, dni, fecha_nacimiento, 
-    direccion, telefono, numero, piso, departamento, referencia, 
-    provincia, pais, ciudad, codigo_postal }) => {
-=======
   register: async ({
     nombre_usuario,
     email,
@@ -69,7 +64,6 @@ const AuthService = {
     cargo,
     area,
   }) => {
->>>>>>> ec3d53dcd7ae846eddcc04c3c7c90551daad0a9c
     const conn = await pool.getConnection();
     try {
       await conn.beginTransaction();
@@ -129,13 +123,8 @@ const AuthService = {
           );
         }
         await conn.query(
-<<<<<<< HEAD
-          "INSERT INTO clientes (id_usuario, direccion, telefono, nombre, apellido, dni, fecha_nacimiento, numero, piso, departamento, referencia, provincia, pais, ciudad, codigo_postal) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-          [userId, direccion, telefono, nombre, apellido, dni, fecha_nacimiento, numero, piso, departamento, referencia, provincia, pais, ciudad, codigo_postal]
-=======
           "INSERT INTO administradores (id_usuario, nombre, apellido, dni, telefono, cargo, area) VALUES (?, ?, ?, ?, ?, ?, ?)",
           [userId, nombre, apellido, dni, telefono || null, cargo, area || "otro"]
->>>>>>> ec3d53dcd7ae846eddcc04c3c7c90551daad0a9c
         );
       }
 

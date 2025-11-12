@@ -6,24 +6,6 @@ const registerSchema = Joi.object({
   password: Joi.string().min(8).max(128).required(),
   avatar_url: Joi.string().uri().optional(),
   role: Joi.string().valid("cliente", "admin", "superadmin").default("cliente"),
-<<<<<<< HEAD
-  clienteData: Joi.object({
-    nombre: Joi.string().max(100).required(),
-    apellido: Joi.string().max(100).required(),
-    telefono: Joi.string().max(25).required(),
-    dni: Joi.string().max(20).required(),
-    direccion: Joi.string().max(255).required(),
-    numero: Joi.string().max(10).optional(),
-    piso: Joi.string().max(10).optional(),
-    departamento: Joi.string().max(10).optional(),
-    referencia: Joi.string().max(255).optional(),
-    provincia: Joi.string().max(100).required(),
-    pais: Joi.string().max(100).required(),
-    ciudad: Joi.string().max(100).required(),
-    codigo_postal: Joi.string().max(20).required(),
-    fecha_nacimiento: Joi.date().less("1/01/2010").optional(),
-  }),
-=======
   fecha_nacimiento: Joi.date().less("1/01/2010").optional(),
 
   // Cliente plano (sin objeto)
@@ -40,7 +22,6 @@ const registerSchema = Joi.object({
   pais: Joi.string().max(100).optional(),
   ciudad: Joi.string().max(100).optional(),
   codigo_postal: Joi.string().max(20).optional(),
->>>>>>> ec3d53dcd7ae846eddcc04c3c7c90551daad0a9c
 });
 
 // Esquema de validación: Login (Permite login con nombre_usuario o email)

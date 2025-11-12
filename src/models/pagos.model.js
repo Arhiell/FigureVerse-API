@@ -69,15 +69,12 @@ const PagoModel = {
   },
 
   // Actualizar estado manualmente por id_pago
-<<<<<<< HEAD
-=======
   /**
    * Actualiza el estado de un pago por id_pago.
    * @param {number} id_pago
    * @param {string} nuevoEstado
    * @param {object} rawJson
    */
->>>>>>> ec3d53dcd7ae846eddcc04c3c7c90551daad0a9c
   actualizarEstadoPorIdPago: async (id_pago, nuevoEstado, rawJson) => {
     await pool.query(
       `UPDATE pagos
@@ -86,8 +83,6 @@ const PagoModel = {
       [nuevoEstado, JSON.stringify(rawJson), id_pago]
     );
   },
-<<<<<<< HEAD
-=======
 
   // Listar todos los pagos
   /**
@@ -114,7 +109,6 @@ const PagoModel = {
     );
     return rows;
   },
->>>>>>> ec3d53dcd7ae846eddcc04c3c7c90551daad0a9c
 };
 
 module.exports = PagoModel;

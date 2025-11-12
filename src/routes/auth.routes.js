@@ -218,54 +218,6 @@
  *                 example: "MarcoAdmin"
  *               email:
  *                 type: string
-<<<<<<< HEAD
- *                 example: "ariel@figureverse.com"
- *     responses:
- *       501:
- *         description: Funcionalidad no implementada.
- */
-
-/**
- * @swagger
- * /auth/reset-password:
- *   post:
- *     summary: Restablece la contraseña del usuario.
- *     tags: [Autenticación]
- *     responses:
- *       501:
- *         description: Funcionalidad no implementada.
- */
-
-/**
- * @swagger
- * /auth/admin/register:
- *   post:
- *     summary: Registra un nuevo administrador (solo super_admin).
- *     tags: [Autenticación]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - nombre_usuario
- *               - email
- *               - password
- *               - nombre
- *               - apellido
- *               - dni
- *               - cargo
- *             properties:
- *               nombre_usuario:
- *                 type: string
- *                 example: "MarcoAdmin"
- *               email:
- *                 type: string
-=======
->>>>>>> ec3d53dcd7ae846eddcc04c3c7c90551daad0a9c
  *                 example: "marco@figureverse.com"
  *               password:
  *                 type: string
@@ -303,8 +255,6 @@
  *                 email: "marco@figureverse.com"
  *                 rol: "admin"
  *                 estado: "activo"
-<<<<<<< HEAD
-=======
  *       401:
  *         description: Token inválido o expirado.
  *         content:
@@ -312,7 +262,6 @@
  *             example:
  *               ok: false
  *               error: "Token inválido o expirado"
->>>>>>> ec3d53dcd7ae846eddcc04c3c7c90551daad0a9c
  *       400:
  *         description: Datos inválidos o campos faltantes.
  *         content:
@@ -379,7 +328,8 @@ router.get(
 );
 
 // Perfil de usuario autenticado
-router.get("/profile", authJwt, AuthController.profile);
+router.get("/profile", authJwt, AuthController.profile,
+);
 
 /**
  * @swagger
