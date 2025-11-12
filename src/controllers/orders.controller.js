@@ -1,4 +1,5 @@
 const OrdersService = require("../services/orders.service");
+const { publishEvent } = require("../lib/publishEvent");
 
 const OrdersController = {
   /**
@@ -80,6 +81,8 @@ const OrdersController = {
         notas,
         detalles,
       });
+
+      publishEvent({ event: "OrderCreated", payload: order }).catch(() => {});
 
       res.status(201).json({
         ok: true,
