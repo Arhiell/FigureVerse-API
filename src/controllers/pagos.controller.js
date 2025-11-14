@@ -5,6 +5,7 @@ const HistorialService = require("../services/historial.service");
 const EnviosService = require("../services/envios.service");
 const OrdersService = require("../services/orders.service");
 const FacturacionService = require("../services/factura.service");
+const { publishEvent } = require("../lib/publishEvent");
 
 const PagosController = {
   // Listar todos los pagos (admin/super_admin)
@@ -54,6 +55,20 @@ const PagosController = {
     try {
       const { id_pedido, monto } = req.body;
       const pref = await PagoService.iniciarPago({ id_pedido, monto });
+
+      try {
+        await publishEvent({
+          event: "PaymentInitiated",
+          payload: {
+            id_pago: pref?.id_pago || null,
+            id_pedido,
+            monto,
+            preference_id: pref?.id || pref?.body?.id || null,
+            init_point: pref?.init_point || pref?.body?.init_point || null,
+            sandbox_init_point: pref?.sandbox_init_point || pref?.body?.sandbox_init_point || null,
+          },
+        });
+      } catch (_) {}
       res.status(201).json({
         ok: true,
         message: "Preferencia de pago creada exitosamente.",
@@ -188,6 +203,40 @@ const PagosController = {
           automatismos.error = autoErr?.message || String(autoErr);
         }
       }
+
+      // Publicar eventos según nuevo estado
+      try {
+        if (estado === "aprobado") {
+          await publishEvent({
+            event: "PaymentApproved",
+            payload: {
+              id_pago: Number(id),
+              id_pedido: pago.id_pedido || null,
+              monto: pago.monto || null,
+              fecha: new Date().toISOString(),
+            },
+          });
+        } else if (estado === "rechazado") {
+          await publishEvent({
+            event: "PaymentFailed",
+            payload: {
+              id_pago: Number(id),
+              id_pedido: pago.id_pedido || null,
+              motivo: motivo || null,
+              fecha: new Date().toISOString(),
+            },
+          });
+        } else if (estado === "pendiente") {
+          await publishEvent({
+            event: "PaymentInitiated",
+            payload: {
+              id_pago: Number(id),
+              id_pedido: pago.id_pedido || null,
+              fecha: new Date().toISOString(),
+            },
+          });
+        }
+      } catch (_) {}
 
       res.json({
         ok: true,
