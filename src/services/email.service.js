@@ -33,15 +33,14 @@ let cachedTransporter = null;
 function getTransporter() {
   if (cachedTransporter) return cachedTransporter;
 
-  const host = process.env.SMTP_HOST;
-  const port = Number(process.env.SMTP_PORT || 587);
-  const secure = String(process.env.SMTP_SECURE || "false").toLowerCase() === "true";
-  const user = process.env.MAIL_USER;
-  const pass = process.env.MAIL_PASS;
-
+  const host = process.env.EMAIL_HOST;
+  const port = Number(process.env.EMAIL_PORT || 587);
+  const secure = String(process.env.EMAIL_SECURE || "false").toLowerCase() === "true";
+  const user = process.env.EMAIL_USER;
+  const pass = process.env.EMAIL_PASS;
   if (!host || !user || !pass) {
     throw new Error(
-      "Configuración SMTP incompleta: se requieren SMTP_HOST, MAIL_USER y MAIL_PASS"
+      "Configuración SMTP incompleta: se requieren EMAIL_HOST, EMAIL_USER y EMAIL_PASS"
     );
   }
 
