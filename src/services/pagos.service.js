@@ -47,9 +47,15 @@ const PagoService = {
 
   // Actualizar estado al recibir webhook
   procesarWebhook: async (data) => {
+    console.log("WEBHOOK RECIBIDO:", JSON.stringify(data, null, 2));
     try {
       const idTransaccion = data?.data?.id || data?.id;
+      const tipo = data?.type;
 
+      if (tipo !== "payment") {
+      console.log("Webhook ignorado (tipo no soportado):", tipo);
+      return;
+      }
       // Recuperar el pago desde Mercado Pago (SDK v2)
       const payment = new Payment(client);
       const result = await payment.get({ id: idTransaccion });

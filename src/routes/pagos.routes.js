@@ -72,7 +72,7 @@ const PagosController = require("../controllers/pagos.controller");
  * Webhook de Mercado Pago (sin autenticación)
  * Nota: Este endpoint no requiere JWT y es consumido por Mercado Pago.
  */
-router.post("/callback", express.raw({ type: "*/*" }),
+router.post("/webhook-sync", express.raw({ type: "*/*" }),
   PagosController.recibirWebhook,
   (req, res) => {
     console.log("WEBHOOK LLEGÓ:", req.body.toString());
