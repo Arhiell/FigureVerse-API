@@ -31,7 +31,7 @@
 
 /**
  * @swagger
- * /pagos/callback:
+ * /pagos/webhook-sync:
  *   post:
  *     summary: Webhook de Mercado Pago
  *     tags: [Pagos]
@@ -72,12 +72,9 @@ const PagosController = require("../controllers/pagos.controller");
  * Webhook de Mercado Pago (sin autenticación)
  * Nota: Este endpoint no requiere JWT y es consumido por Mercado Pago.
  */
-router.post("/webhook-sync", express.raw({ type: "*/*" }),
-  PagosController.recibirWebhook,
-  (req, res) => {
-    console.log("WEBHOOK LLEGÓ:", req.body.toString());
-  }
-);
+router.post("/webhook-sync", PagosController.recibirWebhook);
+
+
 router.get("/success", (req, res) => 
   {res.send(`
     <h1>Pago aprobado </h1>

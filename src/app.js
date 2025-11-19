@@ -26,7 +26,7 @@ const app = express();
 // ==========================
 app.use(helmet());
 app.use(cors({ origin: process.env.CORS_ORIGIN }));
-app.use("/pagos/callback", bodyParser.raw({ type: "*/*" })); // Webhook MP
+//app.use("/pagos/callback", bodyParser.raw({ type: "*/*" })); // Webhook MP
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(passport.initialize());

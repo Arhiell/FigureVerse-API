@@ -92,13 +92,16 @@ const PagosController = {
    */
   recibirWebhook: async (req, res) => {
     try {
-      const payload = Buffer.isBuffer(req.body)
-        ? JSON.parse(req.body.toString("utf8"))
-        : req.body;
+      console.log("LLEGÓ A WEBHOOK-SYNC:");
+      console.log(req.body);
+
+       // Si Cloud Function manda raw: req.body.raw
+      const payload = req.body.raw ? req.body.raw : req.body;
+
       await PagoService.procesarWebhook(payload);
       res.sendStatus(200);
     } catch (error) {
-      console.error("Error en webhook:", error);
+      console.error("Error en webhook-sync:", error);
       res.sendStatus(500);
     }
   },

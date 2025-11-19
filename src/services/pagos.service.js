@@ -49,21 +49,22 @@ const PagoService = {
   procesarWebhook: async (data) => {
     console.log("WEBHOOK RECIBIDO:", JSON.stringify(data, null, 2));
     try {
-      const idTransaccion = data?.data?.id || data?.id;
-      const tipo = data?.type;
+      const idTransaccion =
+      data.paymentId ||
+      data?.data?.id ||
+      data?.id;
 
       if (tipo !== "payment") {
       console.log("Webhook ignorado (tipo no soportado):", tipo);
       return;
       }
+
       // Recuperar el pago desde Mercado Pago (SDK v2)
-      const payment = new Payment(client);
-      const result = await payment.get({ id: idTransaccion });
-      const estado = result?.status || result?.body?.status; // "approved", "pending", "rejected"
+      const estado = data.estado || data?.status; // "approved", "pending", "rejected"
       const rawPayment = result?.body || result;
 
       // Intento mapear por external_reference (id_pedido)
-      const externalRef = rawPayment?.external_reference;
+       const externalRef = data.externalRef || data?.external_reference;
       if (externalRef) {
         const id_pedido = Number(externalRef);
         await PagoModel.actualizarEstadoPorPedido(id_pedido, estado, rawPayment);

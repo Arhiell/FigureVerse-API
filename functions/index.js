@@ -40,7 +40,7 @@ app.post("/pagos/callback", async (req, res) => {
 
     // TODO: Llamar a tu backend principal para actualizar pedido/pago
     // Ejemplo con fetch:
-    await fetch("https://localhost:3000/pagos/webhook-sync", {
+    await fetch("http://localhost:3000/pagos/webhook-sync", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
