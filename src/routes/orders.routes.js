@@ -164,7 +164,6 @@ router.use(authJwt);
 // Crear nuevo pedido (solo cliente autenticado)
 router.post(
   "/",
-  checkRole("cliente"),
   celebrate({ [Segments.BODY]: createOrderSchema }),
   OrdersController.createOrder
 );

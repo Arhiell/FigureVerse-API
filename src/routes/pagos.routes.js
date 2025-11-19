@@ -67,15 +67,35 @@ const { authJwt } = require("../middlewares/authJwt");
 const { checkRole } = require("../middlewares/roleMiddleware");
 const PagosController = require("../controllers/pagos.controller");
 
+// RUTAS PUBLICAS //
 /**
  * Webhook de Mercado Pago (sin autenticación)
  * Nota: Este endpoint no requiere JWT y es consumido por Mercado Pago.
  */
-router.post(
-  "/callback",
-  express.raw({ type: "*/*" }),
-  PagosController.recibirWebhook
+router.post("/callback", express.raw({ type: "*/*" }),
+  PagosController.recibirWebhook,
+  (req, res) => {
+    console.log("WEBHOOK LLEGÓ:", req.body.toString());
+  }
 );
+router.get("/success", (req, res) => 
+  {res.send(`
+    <h1>Pago aprobado </h1>
+    <p>¡Gracias por tu compra! Tu pago fue procesado correctamente.</p>
+  `);
+});
+router.get("/failure", (req, res) => {
+  {res.send(`
+    <h1>Pago rechazado </h1>
+    <p>Lo sentimos, tu pago no pudo ser procesado. Por favor, intenta nuevamente.</p>
+  `);
+}});
+router.get("/pending", (req, res) => {
+  {res.send(`
+    <h1>Pago pendiente </h1>
+    <p>Tu pago está en proceso. Te notificaremos una vez que se complete.</p>
+  `);
+}});
 
 // Protege el resto de rutas de pagos con JWT
 router.use(authJwt);
@@ -94,14 +114,6 @@ router.get(
   PagosController.listarPagos
 );
 
-// Protege el resto de rutas de pagos con JWT
-router.use(authJwt);
-
-/**
- * Iniciar un nuevo pago
- */
-router.post("/", PagosController.createPayment);
-
 /**
  * @swagger
  * /pagos:
@@ -115,14 +127,6 @@ router.post("/", PagosController.createPayment);
  *         description: Listado de pagos.
  */
 
-/**
- * Listar pagos pendientes (admin/super_admin)
- */
-router.get(
-  "/pendientes",
-  checkRole("admin", "super_admin"),
-  PagosController.listarPendientes
-);
 
 /**
  * @swagger
@@ -202,12 +206,6 @@ router.get(
  *         description: Pago no encontrado.
  */
 
-// Actualizar estado del pago manualmente
-router.put(
-  "/:id/estado",
-  checkRole("admin", "super_admin"),
-  PagosController.actualizarEstadoManual
-);
 
 // Alias PATCH para actualizar estado del pago
 router.patch(
