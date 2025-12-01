@@ -1,4 +1,4 @@
-# 🚀 Feraytek API
+# 🚀 Figureverse API
 
 ![version](https://img.shields.io/badge/version-v0.1.0-blue?style=flat-square)
 ![estado](https://img.shields.io/badge/estado-en%20desarrollo-yellow?style=flat-square)
