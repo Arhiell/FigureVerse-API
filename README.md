@@ -1,66 +1,55 @@
-<h1 align="center">🧩 FigureVerse API</h1>
+# 🧩 FigureVerse API
 
-<p align="center">
-🚀 API enfocada en peticiones rápidas de productos de <strong>cómic</strong>, <strong>manga</strong>, <strong>figuras</strong> y coleccionables, optimizada para catálogos, carritos, pagos, envíos y gestión administrativa.
-</p>
+API para gestionar productos de cómic, manga, figuras y coleccionables. Diseñada para rendimiento y claridad, con módulos de catálogo, carrito, pedidos, pagos, envíos, reseñas, soporte y administración.
 
-<table>
-  <tr>
-    <th>📘 Introducción</th>
-  </tr>
-  <tr>
-    <td>
-      Esta API sirve como núcleo del ecosistema <strong>FigureVerse</strong>, dando soporte a la <em>web</em> y la <em>aplicación de escritorio</em>. Proporciona endpoints REST para gestionar usuarios, productos, carritos, pedidos, pagos (Mercado Pago), envíos, reseñas, soporte, auditoría y más.
-      <br/><br/>
-      Base path del servicio: <code>http://localhost:3000</code> • Salud del servidor: <code>GET /</code>
-    </td>
-  </tr>
+## 🌟 Descripción breve
 
-  <tr>
-    <th>🧰 Tecnologías</th>
-  </tr>
-  <tr>
-    <td>
-      - <strong>Node.js</strong> + <strong>Express</strong> • <code>feraytek-api-main/src/app.js</code><br/>
-      - <strong>MySQL</strong> (con <code>mysql2</code>) • Config en <code>src/config/database.js</code><br/>
-      - <strong>JWT</strong> para autenticación • Middleware en <code>src/middleware/auth.js</code><br/>
-      - <strong>Mercado Pago</strong> integración • <code>src/services/pago.service.js</code><br/>
-      - <strong>Firebase Admin</strong> (Cloud Functions y emulador) • <code>firebase.json</code>, <code>functions/</code>
-    </td>
-  </tr>
+- Base path: `http://localhost:3000`
+- Ruta de salud: `GET /`
+- Punto de entrada: `feraytek-api-main/src/server.js`
 
-  <tr>
-    <th>🧱 Requisitos</th>
-  </tr>
-  <tr>
-    <td>
-      - Node.js 18+<br/>
-      - MySQL 8.x (o compatible)<br/>
-      - Cuenta de <em>Mercado Pago</em> (modo Sandbox) para pruebas<br/>
-      - Opcional: Firebase CLI para emuladores
-    </td>
-  </tr>
+## 🔗 Repositorios del ecosistema
 
-  <tr>
-    <th>⚙️ Instalación</th>
-  </tr>
-  <tr>
-    <td>
-      1) Clonar el repositorio<br/>
-      <pre><code>git clone https://github.com/Arhiell/FigureVerse-API.git
-cd FigureVerse-API</code></pre>
-      2) Instalar dependencias<br/>
-      <pre><code>npm install</code></pre>
-    </td>
-  </tr>
+- Web (catálogo y compras): https://github.com/Arhiell/FigureVerse_Web
+- Escritorio (gestión administrativa): https://github.com/BautiC-9/FigureVerse-Escritorio
+- API Python (Cloud Functions + Gemini): https://github.com/Arhiell/FigureVerse_API_Python
 
-  <tr>
-    <th>🔑 Configuración (.env)</th>
-  </tr>
-  <tr>
-    <td>
-      Copiar <code>feraytek-api-main/.env.example</code> a <code>feraytek-api-main/.env</code> y completar variables:
-      <pre><code>PORT=3000
+## 🧰 Tecnologías
+
+- Node.js + Express (`feraytek-api-main/src/app.js`)
+- MySQL (`mysql2`) con configuración en `src/config/database.js`
+- JWT para autenticación (`src/middleware/auth.js`)
+- Mercado Pago (`src/services/pago.service.js`)
+- Firebase Admin (si aplica) `firebase.json`, `functions/`
+
+## 🧱 Requisitos
+
+- Node.js 18+
+- MySQL 8.x (o compatible)
+- Cuenta de Mercado Pago (Sandbox)
+- Opcional: Firebase CLI
+
+## ⚙️ Instalación
+
+1. Clonar el repositorio
+
+```bash
+git clone https://github.com/Arhiell/FigureVerse-API.git
+cd FigureVerse-API
+```
+
+2. Instalar dependencias
+
+```bash
+npm install
+```
+
+## 🔑 Configuración (.env)
+
+Copiar `feraytek-api-main/.env.example` a `feraytek-api-main/.env` y completar:
+
+```env
+PORT=3000
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=***
@@ -68,145 +57,91 @@ DB_NAME=feraytek
 DB_PORT=3306
 
 # Mercado Pago (Sandbox)
-
 MP_ACCESS_TOKEN=TEST
-MP_PUBLIC_KEY=TEST</code></pre>
-⚠️ No subir credenciales reales al repositorio. Usa variables de entorno.
-</td>
+MP_PUBLIC_KEY=TEST
+```
 
-  </tr>
+⚠️ No subir credenciales reales. Usa variables de entorno.
 
-  <tr>
-    <th>🏃 Ejecución</th>
-  </tr>
-  <tr>
-    <td>
-      Arranque del servidor (punto de entrada): <code>feraytek-api-main/src/server.js</code><br/>
-      <pre><code>npm run dev</code></pre>
-      Al iniciar: crea tablas para auditoría y restablecimiento de contraseña • Logs en consola.
-    </td>
-  </tr>
+## 🏃 Ejecución
 
-  <tr>
-    <th>📂 Estructura del proyecto</th>
-  </tr>
-  <tr>
-    <td>
-      - <code>feraytek-api-main/src/app.js</code>: Configura middlewares y registra rutas<br/>
-      - <code>src/controllers/</code>: Lógica HTTP de cada módulo<br/>
-      - <code>src/services/</code>: Reglas de negocio y validaciones<br/>
-      - <code>src/models/</code>: Acceso a datos (MySQL)<br/>
-      - <code>src/routes/</code>: Definición de endpoints y paths base<br/>
-      - <code>src/middleware/</code>: Auth, auditoría, validaciones, errores<br/>
-      - <code>functions/</code>: Firebase Functions y emuladores
-    </td>
-  </tr>
+Punto de entrada: `feraytek-api-main/src/server.js`
 
-  <tr>
-    <th>🧭 Endpoints principales</th>
-  </tr>
-  <tr>
-    <td>
-      - 👤 Usuarios: <code>/api/users</code> • Registro, login, perfiles • Ej.: <code>GET /api/users/:id</code> (<code>src/controllers/user.controller.js</code>)<br/>
-      - 🛍️ Productos: <code>/api/productos</code> • Listar, detalle • Ej.: <code>GET /api/productos/:id</code> (<code>src/controllers/producto.controller.js</code>)<br/>
-      - 🗂️ Categorías: <code>/api/categorias</code> • CRUD categorías<br/>
-      - 🖼️ Imágenes: <code>/api/imagenes_productos</code><br/>
-      - ⭐ Reseñas: <code>/api/resenas</code><br/>
-      - 🛒 Carrito: <code>/api/carrito</code> • Agregar/eliminar/vaciar, estadísticas admin<br/>
-      - 📦 Pedidos: <code>/api/pedidos</code> • Detalle y listado con permisos<br/>
-      - 💳 Pagos: <code>/api/pagos</code> • Preferencias, estados, <code>POST /api/pagos/webhook</code><br/>
-      - 🚚 Envíos: <code>/api/envios</code> • Crear, actualizar, cambiar estado<br/>
-      - 🧾 Facturas: <code>/api/facturas</code><br/>
-      - 🛠️ Admin: <code>/api/admin</code> • Gestión administrativa y superadmin <code>/api/superadmin</code><br/>
-      - 🧑‍💻 Gestión de usuario: <code>/api/user-management</code><br/>
-      - 🔐 Auth y recuperación: <code>/api/auth</code> (reset de contraseña)<br/>
-      - 🏷️ Descuentos: <code>/api/descuentos</code> • Variantes: <code>/api/variantes</code><br/>
-      - 🆘 Soporte: <code>/api/soporte</code> • Tickets, prioridades
-      <br/><br/>
-      Ruta raíz de salud: <code>GET /</code> → <em>"8D API Feraytek - Servidor activo"</em>
-    </td>
-  </tr>
+```bash
+npm run dev
+```
 
-  <tr>
-    <th>🔐 Autenticación y roles</th>
-  </tr>
-  <tr>
-    <td>
-      JWT vía middleware (<code>src/middleware/auth.js</code>). Roles: <code>cliente</code>, <code>admin</code>, <code>superadmin</code>.<br/>
-      Endpoints con restricción verifican permisos y propiedad de recursos (p. ej. pedidos).
-    </td>
-  </tr>
+Al iniciar: crea tablas de auditoría y password reset. Logs en consola.
 
-  <tr>
-    <th>🌐 Integraciones</th>
-  </tr>
-  <tr>
-    <td>
-      - Mercado Pago (sandbox) • Webhook: <code>POST /api/pagos/webhook</code><br/>
-      - Firebase Admin • Emuladores vistos en <code>firebase.json</code>
-    </td>
-  </tr>
+## 📂 Estructura del proyecto
 
-  <tr>
-    <th>🗄️ Base de datos</th>
-  </tr>
-  <tr>
-    <td>
-      MySQL con tablas para usuarios, productos, carritos, pedidos, envíos, reseñas, auditoría, etc.<br/>
-      Conexión en <code>src/config/database.js</code> y modelos en <code>src/models/</code>.
-    </td>
-  </tr>
+- `feraytek-api-main/src/app.js`: middlewares y registro de rutas
+- `src/controllers/`: controladores HTTP
+- `src/services/`: lógica de negocio
+- `src/models/`: acceso a datos (MySQL)
+- `src/routes/`: endpoints y paths base
+- `src/middleware/`: auth, auditoría, validación, errores
+- `functions/`: Firebase Functions y emuladores
 
-  <tr>
-    <th>🧪 Scripts y datos</th>
-  </tr>
-  <tr>
-    <td>
-      Semillas y utilidades en <code>src/scripts/</code> (<code>seed.js</code>, listado de productos, reseñas). Ejecuta con Node.
-    </td>
-  </tr>
+## 🧭 Endpoints principales
 
-  <tr>
-    <th>🧯 Seguridad</th>
-  </tr>
-  <tr>
-    <td>
-      - No subir claves privadas ni tokens productivos. Usa <code>.env</code> y gestores seguros.<br/>
-      - Limitar CORS según origen en producción.<br/>
-      - Validar datos en <code>services/</code> y sanitizar entradas.
-    </td>
-  </tr>
+- Usuarios: `/api/users` (registro, login, perfiles) — ejemplo: `GET /api/users/:id`
+- Productos: `/api/productos` (listado, detalle) — ejemplo: `GET /api/productos/:id`
+- Categorías: `/api/categorias`
+- Imágenes: `/api/imagenes_productos`
+- Reseñas: `/api/resenas`
+- Carrito: `/api/carrito` (agregar, eliminar, vaciar, estadísticas admin)
+- Pedidos: `/api/pedidos` (detalle con permisos)
+- Pagos: `/api/pagos` (preferencias, estados, `POST /api/pagos/webhook`)
+- Envíos: `/api/envios`
+- Facturas: `/api/facturas`
+- Admin: `/api/admin` y `/api/superadmin`
+- Gestión de usuario: `/api/user-management`
+- Autenticación y recuperación: `/api/auth`
+- Descuentos: `/api/descuentos` • Variantes: `/api/variantes`
+- Soporte: `/api/soporte`
 
-  <tr>
-    <th>🔎 Ejemplo rápido</th>
-  </tr>
-  <tr>
-    <td>
-      Obtener producto por ID:<br/>
-      <pre><code>curl http://localhost:3000/api/productos/123</code></pre>
-    </td>
-  </tr>
+Ruta raíz de salud: `GET /` → "8D API Feraytek - Servidor activo"
 
-  <tr>
-    <th>🔗 Repositorios relacionados</th>
-  </tr>
-  <tr>
-    <td>
-      - 🌐 Web (catálogo y compras): <a href="https://github.com/Arhiell/FigureVerse_Web">FigureVerse_Web</a><br/>
-      - 🖥️ Escritorio (gestión administrativa): <a href="https://github.com/BautiC-9/FigureVerse-Escritorio">FigureVerse-Escritorio</a><br/>
-      - 🧠 API Python (Cloud Functions + Gemini): <a href="https://github.com/Arhiell/FigureVerse_API_Python">FigureVerse_API_Python</a>
-    </td>
-  </tr>
+## 🔐 Autenticación y roles
 
-  <tr>
-    <th>🏫 Créditos</th>
-  </tr>
-  <tr>
-    <td>
-      Universidad Tecnológica Nacional (UTN) – Facultad Regional Resistencia<br/>
-      Carrera: Técnico Universitario en Programación<br/>
-      Autores: Ayala, Ariel • Capovilla, Bautista<br/>
-      Profesores: Python – Goya, Juan Manuel • JavaScript – Puljiz, Emilio
-    </td>
-  </tr>
-</table>
+JWT vía middleware (`src/middleware/auth.js`). Roles soportados: `cliente`, `admin`, `superadmin`.
+Validación de permisos y propiedad en endpoints sensibles (ej. pedidos).
+
+## 🌐 Integraciones
+
+- Mercado Pago (sandbox) — webhook: `POST /api/pagos/webhook`
+- Firebase Admin — emuladores según `firebase.json`
+
+## 🗄️ Base de datos
+
+MySQL con tablas para usuarios, productos, carritos, pedidos, envíos, reseñas, auditoría, etc.
+Conexión en `src/config/database.js` y modelos en `src/models/`.
+
+## 🧪 Scripts y datos
+
+Semillas y utilidades en `src/scripts/` (`seed.js`, listado de productos, reseñas). Ejecuta con Node.
+
+## 🧯 Seguridad
+
+- No subir claves privadas ni tokens productivos. Usa `.env` y gestores seguros.
+- Limitar CORS según origen en producción.
+- Validar datos en `services/` y sanitizar entradas.
+
+## 🔎 Ejemplos de uso
+
+Obtener producto por ID:
+
+```bash
+curl http://localhost:3000/api/productos/123
+```
+
+## 🏫 Créditos
+
+Universidad Tecnológica Nacional (UTN) – Facultad Regional Resistencia
+
+Carrera: Técnico Universitario en Programación
+
+Autores: Ayala, Ariel • Capovilla, Bautista
+
+Profesores: Python – Goya, Juan Manuel • JavaScript – Puljiz, Emilio
