@@ -1,0 +1,14 @@
+{
+  "functions": {
+    "source": "functions",
+    "codegenConfig": {
+      "minified": false
+    }
+  },
+  "emulators": {
+    "functions": {
+      "port": 5001
+    }
+  },
+  "timeoutSecond": 300
+}
