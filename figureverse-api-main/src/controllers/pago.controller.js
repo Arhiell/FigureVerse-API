@@ -27,11 +27,12 @@ async function crearPago(req, res) {
       id_pedido,
       descripcion,
       monto_total,
+      payer_email: req.user?.email,
     });
 
     //Si el servicio devuelve un resultado no exitoso
     if (!resultado.ok) {
-      return res.status(400).json(resultado);
+      return res.status(resultado.status || 400).json(resultado);
     }
 
     //  Si todo sale bien, responde con la preferencia creada

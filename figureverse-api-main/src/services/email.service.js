@@ -51,7 +51,7 @@ function renderFacturaHtml({ numero_factura, fecha, total, cliente }) {
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd;">
       <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="color: #333; margin: 0;">FERAYTEK</h1>
+        <h1 style="color: #333; margin: 0;">figureverse</h1>
         <p style="color: #666; margin: 5px 0;">Factura Electrónica</p>
       </div>
       
@@ -81,7 +81,7 @@ function renderFacturaHtml({ numero_factura, fecha, total, cliente }) {
       <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;"/>
       
       <div style="text-align: center; color: #666; font-size: 14px;">
-        <p>Gracias por su compra en Feraytek.</p>
+        <p>Gracias por su compra en figureverse.</p>
         <p>Para cualquier consulta, no dude en contactarnos.</p>
       </div>
     </div>
@@ -102,8 +102,8 @@ async function enviarFacturaCliente({ factura, usuario, adjuntoPdfBuffer, adjunt
 
   return await sendEmail({
     to: usuario.email,
-    subject: `Factura ${factura.numero_factura} - Feraytek`,
-    text: `Estimado/a ${usuario.nombre_usuario || 'Cliente'},\n\nAdjuntamos su factura ${factura.numero_factura}.\nTotal: $${Number(factura.total).toFixed(2)}\n\nGracias por su compra.\n\nSaludos,\nEquipo Feraytek`,
+    subject: `Factura ${factura.numero_factura} - FigureVerse`,
+    text: `Estimado/a ${usuario.nombre_usuario || 'Cliente'},\n\nAdjuntamos su factura ${factura.numero_factura}.\nTotal: $${Number(factura.total).toFixed(2)}\n\nGracias por su compra.\n\nSaludos,\nEquipo FigureVerse`,
     html,
     attachments,
   });

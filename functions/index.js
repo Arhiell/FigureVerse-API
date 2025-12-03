@@ -66,7 +66,7 @@ app.get('/api/resenas', async (req, res) => {
        FROM resenas r
        JOIN usuarios u ON r.id_usuario = u.id_usuario
        JOIN productos p ON r.id_producto = p.id_producto
-       WHERE r.estado = 'aprobada'
+       WHERE r.estado <> 'eliminada'
        ORDER BY r.fecharesena DESC`
     );
     res.json(rows);
@@ -76,7 +76,29 @@ app.get('/api/resenas', async (req, res) => {
   }
 });
 
+app.patch('/api/resenas/:id/eliminar', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ error: 'ID inválido' });
+    }
+    const [result] = await pool.execute(
+      `UPDATE resenas SET estado = 'eliminada' WHERE id_resena = ?`,
+      [id]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Reseña no encontrada' });
+    }
+    res.json({ ok: true, affectedRows: result.affectedRows, changedRows: result.changedRows });
+  } catch (e) {
+    console.error('PATCH /api/resenas/:id/eliminar failed:', e);
+    res.status(500).json({ error: 'Error marcando reseña como eliminada', detail: e.message });
+  }
+});
+
+
 // https://us-central1-figureverse-9b12e.cloudfunctions.net/api/... productos
 // https://us-central1-figureverse-9b12e.cloudfunctions.net/api/... resenas
 // https://us-central1-figureverse-9b12e.cloudfunctions.net/api/... resenas/producto/:id
+
 exports.api = onRequest(app);

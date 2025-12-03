@@ -5,7 +5,7 @@
 ![stack](https://img.shields.io/badge/stack-Node.js%20%7C%20Express%20%7C%20Docker%20%7C%20MySQL-6DA55F?style=flat-square&logo=node.js)
 ![licencia](https://img.shields.io/badge/licencia-MIT-lightgrey?style=flat-square)
 
-API backend oficial del ecosistema Feraytek. Orquesta la comunicación entre las aplicaciones cliente (Web y Escritorio) y la base de datos MySQL mediante endpoints REST seguros, autenticación JWT y una arquitectura limpia basada en MVC + Service Layer.
+API backend oficial del ecosistema figureverse. Orquesta la comunicación entre las aplicaciones cliente (Web y Escritorio) y la base de datos MySQL mediante endpoints REST seguros, autenticación JWT y una arquitectura limpia basada en MVC + Service Layer.
 
 ## 📚 Tabla de Contenidos
 - [Descripción General](#-descripción-general)
@@ -22,7 +22,7 @@ API backend oficial del ecosistema Feraytek. Orquesta la comunicación entre las
 - [Licencia](#-licencia)
 - [Enlaces Oficiales](#-enlaces-oficiales)
 
-> **Backend RESTful API del ecosistema Feraytek** - Núcleo de comunicación entre base de datos MySQL y aplicaciones cliente (Escritorio y Web)
+> **Backend RESTful API del ecosistema figureverse** - Núcleo de comunicación entre base de datos MySQL y aplicaciones cliente (Escritorio y Web)
 
 ![Version](https://img.shields.io/badge/version-v0.1.0-blue.svg)
 ![Status](https://img.shields.io/badge/status-En%20desarrollo-yellow.svg)
@@ -32,18 +32,18 @@ API backend oficial del ecosistema Feraytek. Orquesta la comunicación entre las
 
 ## 🧠 Descripción General
 
-La **Feraytek API** es el núcleo del sistema Feraytek, actuando como interfaz de comunicación entre la **base de datos MySQL** y las aplicaciones cliente. Esta API RESTful proporciona servicios de autenticación, gestión de productos, procesamiento de pedidos, estadísticas y administración de usuarios.
+La **figureverse API** es el núcleo del sistema figureverse, actuando como interfaz de comunicación entre la **base de datos MySQL** y las aplicaciones cliente. Esta API RESTful proporciona servicios de autenticación, gestión de productos, procesamiento de pedidos, estadísticas y administración de usuarios.
 
 ### 🔗 Integración del Ecosistema
 
 La API sirve como backend para dos aplicaciones principales:
 
 1. **🖥️ Aplicación de Escritorio (Panel Administrativo)** - Desarrollada con Electron
-   - Repositorio: [`Feraytek`](https://github.com/Arhiell/Feraytek.git) <mcreference link="https://github.com/Arhiell/Feraytek.git" index="0">0</mcreference>
+   - Repositorio: [`figureverse`](https://github.com/Arhiell/figureverse.git) <mcreference link="https://github.com/Arhiell/figureverse.git" index="0">0</mcreference>
    - Funciones: Administración, estadísticas, gestión de inventario
 
 2. **💻 Aplicación Web (Tienda Online)** - Frontend para clientes
-   - Repositorio: [`FeraytekWeb`](https://github.com/Arhiell/FeraytekWeb.git)
+   - Repositorio: [`figureverseWeb`](https://github.com/Arhiell/figureverseWeb.git)
    - Funciones: Catálogo, carrito de compras, procesamiento de pagos
 
 ### 📊 Flujo de Comunicación
@@ -60,7 +60,7 @@ Diagrama conceptual (ASCII):
 
 ```
                 ┌───────────────────────────┐
-                │      Clientes Feraytek    │
+                │      Clientes figureverse    │
                 │                           │
    ┌────────────┴─────────────┐  ┌──────────┴───────────┐
    │ Escritorio (Electron)    │  │ Web (Tienda Online)  │
@@ -70,7 +70,7 @@ Diagrama conceptual (ASCII):
                 └────────────┬──────────────┘
                              ▼
                      ┌─────────────────┐
-                     │  Feraytek API   │  Node.js + Express
+                     │  figureverse API   │  Node.js + Express
                      │  (Controllers)  │  JWT, CORS, Helmet
                      └───────┬─────────┘
                              │ delega
@@ -92,15 +92,15 @@ Diagrama conceptual (ASCII):
 
 Diagrama SVG (opcional) para documentación visual:
 
-![Arquitectura Feraytek](docs/architecture.svg)
+![Arquitectura figureverse](docs/architecture.svg)
 
 La API sigue el patrón **MVC + Service Layer** para garantizar escalabilidad y mantenibilidad:
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Apps Cliente  │    │   Feraytek API  │    │  MySQL Database │
+│   Apps Cliente  │    │   figureverse API  │    │  MySQL Database │
 │                 │    │                 │    │                 │
-│ • Electron App  │◄──►│ • Controllers   │◄──►│ • feraytek_db   │
+│ • Electron App  │◄──►│ • Controllers   │◄──►│ • figureverse_db   │
 │ • Web App       │    │ • Services      │    │ • Tablas        │
 │ • Mobile (fut.) │    │ • Models        │    │ • Relaciones    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
@@ -149,7 +149,7 @@ npm install --save-dev nodemon jest supertest
 ## 🧰 Estructura del Proyecto
 
 ```
-Feraytek-API/
+figureverse-API/
 ├─ src/
 │  ├─ config/
 │  │  ├─ db.js              # Configuración de base de datos
@@ -197,8 +197,8 @@ Feraytek-API/
 ### 1️⃣ Clonar el Repositorio
 
 ```bash
-git clone https://github.com/Arhiell/feraytek-api.git
-cd feraytek-api
+git clone https://github.com/Arhiell/figureverse-api.git
+cd figureverse-api
 ```
 
 ### 2️⃣ Instalar Dependencias
@@ -219,9 +219,9 @@ API_VERSION=v1
 
 # Base de Datos MySQL
 DB_HOST=localhost
-DB_USER=feraytek_user
-DB_PASSWORD=feraytek_pass
-DB_NAME=feraytek_db
+DB_USER=figureverse_user
+DB_PASSWORD=figureverse_pass
+DB_NAME=figureverse_db
 DB_PORT=3306
 
 # Autenticación JWT
@@ -419,7 +419,7 @@ const processPayment = async (paymentData) => {
 API_BASE_URL=http://localhost:3001/api/v1
 
 # Producción
-API_BASE_URL=https://api.feraytek.com/api/v1
+API_BASE_URL=https://api.figureverse.com/api/v1
 ```
 
 ---
@@ -525,7 +525,7 @@ npm run build
 npm run start:pm2
 
 # Verificar estado
-pm2 status feraytek-api
+pm2 status figureverse-api
 ```
 
 ### 🔧 Variables de Entorno de Producción
@@ -535,7 +535,7 @@ NODE_ENV=production
 PORT=3001
 DB_HOST=your-production-db-host
 JWT_SECRET=your-super-secure-jwt-secret
-CORS_ORIGIN=https://feraytek.com,https://admin.feraytek.com
+CORS_ORIGIN=https://figureverse.com,https://admin.figureverse.com
 ```
 
 ---
@@ -564,7 +564,7 @@ Este proyecto está licenciado bajo la **Licencia MIT** - ver el archivo [LICENS
 ```
 MIT License
 
-Copyright (c) 2025 Feraytek Development Team
+Copyright (c) 2025 figureverse Development Team
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -607,11 +607,11 @@ chore: tareas de mantenimiento
 
 ## 🔗 Enlaces Relacionados
 
-### 📱 Repositorios del Ecosistema Feraytek
+### 📱 Repositorios del Ecosistema figureverse
 
-- 🖥️ **Aplicación de Escritorio**: [Feraytek](https://github.com/Arhiell/Feraytek.git)
-- 💻 **Aplicación Web**: [FeraytekWeb](https://github.com/Arhiell/FeraytekWeb.git)
-- 🚀 **API Backend**: [Feraytek-API](https://github.com/Arhiell/feraytek-api) (este repositorio)
+- 🖥️ **Aplicación de Escritorio**: [figureverse](https://github.com/Arhiell/figureverse.git)
+- 💻 **Aplicación Web**: [figureverseWeb](https://github.com/Arhiell/figureverseWeb.git)
+- 🚀 **API Backend**: [figureverse-API](https://github.com/Arhiell/figureverse-api) (este repositorio)
 
 ### 📚 Documentación Adicional
 
@@ -624,10 +624,10 @@ chore: tareas de mantenimiento
 
 <div align="center">
 
-**💻 Desarrollado por el equipo Feraytek**
+**💻 Desarrollado por el equipo figureverse**
 
 *Universidad Tecnológica Nacional - Facultad Regional Resistencia*
 
-**© 2025 - Feraytek Development Team**
+**© 2025 - figureverse Development Team**
 
 </div>

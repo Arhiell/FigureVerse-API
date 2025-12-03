@@ -25,12 +25,13 @@ const mpClient = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN,
   options: { timeout: 5000 },
 });
+const SIMULATE = process.env.PAYMENT_SIMULATION === 'true';
 
 // Crear preferencia de pago (modo sandbox)
 // ----------------------------------------------------------------------
 // Recibe la información del pedido y crea una preferencia (objeto de pago)
 // en el entorno de prueba (sandbox). Devuelve el link simulado de pago.
-async function crearPreferenciaPago({ id_pedido, descripcion, monto_total }) {
+async function crearPreferenciaPago({ id_pedido, descripcion, monto_total, payer_email }) {
   try {
     // Validamos que no exista un pago previo
     const pagoExistente = await obtenerPagoPorPedido(id_pedido);
@@ -38,7 +39,33 @@ async function crearPreferenciaPago({ id_pedido, descripcion, monto_total }) {
       throw new Error("Ya existe un pago asociado a este pedido.");
     }
 
+    if (SIMULATE) {
+      const id_transaccion = `SIM-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+      const raw_gateway_json = { simulated: true };
+      const id_pago = await crearPago({
+        id_pedido,
+        metodo_pago: "mercado_pago",
+        monto: monto_total,
+        id_transaccion,
+        raw_gateway_json,
+      });
+      const simulatedBase = process.env.SIMULATED_PAYMENT_URL || "http://localhost:3000/pago/simulado/";
+      return {
+        ok: true,
+        message: "Preferencia de pago simulada creada correctamente.",
+        data: {
+          id_pago,
+          id_pedido,
+          id_transaccion,
+          estado_pago: "pendiente",
+          link_pago: `${simulatedBase}${id_transaccion}`,
+          link_sandbox: `${simulatedBase}${id_transaccion}`,
+        },
+      };
+    }
+
     // Configuración de la preferencia para Mercado Pago
+    const notificationUrl = process.env.MP_NOTIFICATION_URL || "https://57dd286a51d4.ngrok-free.app/api/pagos/webhook";
     const preference = {
       items: [
         {
@@ -48,13 +75,15 @@ async function crearPreferenciaPago({ id_pedido, descripcion, monto_total }) {
           unit_price: parseFloat(monto_total),
         },
       ],
+      payer: payer_email ? { email: payer_email } : undefined,
+      external_reference: String(id_pedido),
+      statement_descriptor: "FIGUREVERSE",
       back_urls: {
         success: "http://localhost:3000/pago/success",
-        failure: "http://localhost:3000/pago/failure", 
+        failure: "http://localhost:3000/pago/failure",
         pending: "http://localhost:3000/pago/pendiente",
       },
-      notification_url: "https://57dd286a51d4.ngrok-free.app/api/pagos/webhook", // Webhook público via ngrok
-      binary_mode: true, // El pago se aprueba o rechaza automáticamente
+      notification_url: notificationUrl,
     };
 
     // Se crea la preferencia en Mercado Pago (SDK v2)
@@ -88,9 +117,15 @@ async function crearPreferenciaPago({ id_pedido, descripcion, monto_total }) {
     };
   } catch (error) {
     console.error("Error al crear la preferencia de pago:", error);
+    const status = error?.status;
+    const code = (error?.cause && error.cause[0]?.code) || error?.code;
+    const blocked_by = (error?.cause && error.cause[0]?.blocked_by) || undefined;
     return {
       ok: false,
       message: error.message,
+      status,
+      code,
+      blocked_by,
     };
   }
 }
