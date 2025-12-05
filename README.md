@@ -1,7 +1,7 @@
 # 🧩 FigureVerse API
 
 API para gestionar productos de cómic, manga, figuras y coleccionables. Diseñada para rendimiento y claridad, con módulos de catálogo, carrito, pedidos, pagos, envíos, reseñas, soporte y administración.
-
+*ACLARACION: Este trabajo fue usado tambien en la materia de metodologia II, se hizo un cambio de nombres y de tema, porque un trabajo de compañeros en esta materia tambien es un ecommerce. Y se le añadio un modulo de IA que consume una api en python*
 ## 🌟 Descripción breve
 
 - Base path: `http://localhost:3000`
